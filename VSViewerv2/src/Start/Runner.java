@@ -71,7 +71,7 @@ public class Runner {
 		System.err.println("filename is a file that exists");
 		System.err
 				.println("The grid view(2) and three dimension view(4) are the only forms to display sd files");
-		System.err.println("form_to_open is an integer from 0 to 5");
+		System.err.println("form_to_open is an integer from 0 to 4");
 
 		System.exit(0);
 	}
