@@ -18,8 +18,20 @@ import javax.swing.event.ListSelectionListener;
 import Panels.CommentPanel;
 import Util.Database;
 
+/**
+ * A simple test form for the comment view.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class CommentTest implements ListSelectionListener, WindowListener,
 		ActionListener {
+	/**
+	 * Main entry point for the test.
+	 * 
+	 * @param args
+	 *            the file to read.
+	 */
 	public static void main(String[] args) {
 		new CommentTest(args[0]);
 	}
@@ -29,6 +41,12 @@ public class CommentTest implements ListSelectionListener, WindowListener,
 	private JList<String> molNames;
 	private CommentPanel cp;
 
+	/**
+	 * Creates and displays the comment viewer.
+	 * 
+	 * @param file
+	 *            the file to read and display.
+	 */
 	public CommentTest(String file) {
 		try {
 			d = Database.read(file);

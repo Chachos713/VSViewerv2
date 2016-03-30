@@ -15,8 +15,19 @@ import javax.swing.JMenuItem;
 import Panels.MolGridPanel;
 import Util.Database;
 
+/**
+ * A test form for the grid view display of the molecules.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class GridViewTest implements MouseListener, ActionListener {
-	// Needs the file passed into it
+	/**
+	 * The main entry point into the code.
+	 * 
+	 * @param args
+	 *            The file to read.
+	 */
 	public static void main(String[] args) {
 		new GridViewTest(args[0]);
 	}
@@ -24,6 +35,12 @@ public class GridViewTest implements MouseListener, ActionListener {
 	private JFrame frame;
 	private MolGridPanel mgv;
 
+	/**
+	 * Creates and displays the form for the user.
+	 * 
+	 * @param file
+	 *            the file to display.
+	 */
 	public GridViewTest(String file) {
 		Database d;
 		try {

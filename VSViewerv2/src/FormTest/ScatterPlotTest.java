@@ -19,8 +19,20 @@ import javax.swing.JMenuItem;
 import Panels.ScatterPlotPanel;
 import Util.Database;
 
+/**
+ * A simple test form for the scatter plot.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class ScatterPlotTest implements MouseMotionListener, MouseListener,
 		MouseWheelListener, ActionListener, WindowListener {
+	/**
+	 * Main entry point into the test.
+	 * 
+	 * @param args
+	 *            the default file to read.
+	 */
 	public static void main(String[] args) {
 		new ScatterPlotTest(args[0]);
 	}
@@ -28,6 +40,12 @@ public class ScatterPlotTest implements MouseMotionListener, MouseListener,
 	private JFrame frame;
 	private ScatterPlotPanel sp;
 
+	/**
+	 * Creates the form for the user to interact with.
+	 * 
+	 * @param file
+	 *            the file to read.
+	 */
 	public ScatterPlotTest(String file) {
 		Database d;
 		try {
@@ -49,6 +67,11 @@ public class ScatterPlotTest implements MouseMotionListener, MouseListener,
 		frame.setVisible(true);
 	}
 
+	/**
+	 * Creates a menu bar for the form.
+	 * 
+	 * @return The menu bar to display on the form.
+	 */
 	private JMenuBar createMenu() {
 		JMenuBar menu = new JMenuBar();
 

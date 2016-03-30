@@ -11,7 +11,19 @@ import javax.swing.JMenuItem;
 import Panels.ThreeDimPanel;
 import Util.Database;
 
+/**
+ * A test form for the 3D display of the molecules.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class ThreeDimTest implements ActionListener {
+	/**
+	 * Runs the program with a default file
+	 * 
+	 * @param args
+	 *            The default file to read.
+	 */
 	public static void main(String[] args) {
 		new ThreeDimTest(args[0]);
 	}
@@ -19,6 +31,11 @@ public class ThreeDimTest implements ActionListener {
 	private JFrame frame;
 	private ThreeDimPanel tdp;
 
+	/**
+	 * Creates the form for the user to see.
+	 * 
+	 * @param file The file to read.
+	 */
 	public ThreeDimTest(String file) {
 		Database data;
 		try {
@@ -39,6 +56,11 @@ public class ThreeDimTest implements ActionListener {
 		frame.setVisible(true);
 	}
 
+	/**
+	 * Creates the menu bar for the form.
+	 * 
+	 * @return the menu bar to be used on the form.
+	 */
 	public JMenuBar createMenu() {
 		JMenuBar menu = new JMenuBar();
 

@@ -7,17 +7,41 @@ import FormTest.GridViewTest;
 import FormTest.ScatterPlotTest;
 import FormTest.ThreeDimTest;
 
+/**
+ * The main entry point to the program. Determines what to do based on the
+ * command line arguements are.
+ * 
+ * Expects the arguements to be default file to open, then te=he form to start
+ * with. Does provide default values for both.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class Runner {
+	/**
+	 * The main entry point into the program
+	 * 
+	 * @param args
+	 *            the list of command line arguements.
+	 * @throws Exception
+	 *             if there is a problem with reading the default file.
+	 */
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
+			// No Arguements are provided
+			// Open with no file
 			new DefaultStart("");
 		} else if (args.length == 1) {
+			// A default file is provided
+			// Checks that the file exists and is a vsv
 			if (!checkFile(args[0], true)) {
 				errMessage();
 			}
 
 			new DefaultStart(args[0]);
 		} else if (args.length == 2) {
+			// A default file is proided as well as a for to look at
+			// Checks that the file exists
 			if (!checkFile(args[0], false)) {
 				errMessage();
 			}
@@ -30,6 +54,7 @@ public class Runner {
 				errMessage();
 			}
 
+			// Uses the test forms to show specific forms.
 			switch (selected) {
 			case 0:// Default View
 				break;
@@ -56,15 +81,30 @@ public class Runner {
 				errMessage();
 			}
 		} else {
+			// Any other number of arguements are provided
 			errMessage();
 		}
 	}
 
+	/**
+	 * Checks for if the file is okay to read
+	 * 
+	 * @param file
+	 *            The file to check.
+	 * @param def
+	 *            Check if the file is .vsv.
+	 * @return True if the file exists and the file is a .vsv if needed.
+	 */
 	private static boolean checkFile(String file, boolean def) {
 		File f = new File(file);
-		return f.exists() && (file.endsWith(".vsv") || !def);
+		// Part after && is logically equivalent to def -> vsv
+		return f.exists() && (!def || file.endsWith(".vsv"));
 	}
 
+	/**
+	 * Outputs the error message, then ends the program. Occurs when the
+	 * arguements for the program are wrong.
+	 */
 	private static void errMessage() {
 		System.err
 				.println("usage: java -jar VSViewer3D.jar [filename = \"\"] [form_to_open = 0]");
