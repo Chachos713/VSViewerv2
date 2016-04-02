@@ -11,11 +11,23 @@ import javax.swing.JMenuItem;
 import Panels.ThreeDimPanel;
 import Util.Database;
 
+/**
+ * The 3D form for the main program.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class ThreeDimView implements ActionListener {
 	private ThreeDimPanel tdp;
 	private JFrame frame;
 	private int dim;
 
+	/**
+	 * Creates a 3D view form based on the database.
+	 * 
+	 * @param d
+	 *            The database of molecules.
+	 */
 	public ThreeDimView(Database d) {
 		dim = d.getMolecule(0).getDimension();
 
@@ -30,10 +42,23 @@ public class ThreeDimView implements ActionListener {
 		frame.pack();
 	}
 
+	/**
+	 * Displays the form.
+	 * 
+	 * @param last
+	 *            if the form being already displayed matters. Uses 'implies' to
+	 *            do the operation. Mainly used for when the form is set not to
+	 *            display, and then set to display.
+	 */
 	public void show(boolean last) {
 		frame.setVisible(tdp.display() && (!last || frame.isVisible()));
 	}
 
+	/**
+	 * Creates the menu bar of the 3D form.
+	 * 
+	 * @return The menu bar for the 3D form.
+	 */
 	public JMenuBar createMenu() {
 		JMenuBar menu = new JMenuBar();
 
@@ -58,6 +83,12 @@ public class ThreeDimView implements ActionListener {
 		return menu;
 	}
 
+	/**
+	 * Set a molecule to be displayed in the 3D view.
+	 * 
+	 * @param m
+	 *            The index of the molecule to add.
+	 */
 	public void addMol(int m) {
 		if (m < 0)
 			return;
@@ -68,6 +99,9 @@ public class ThreeDimView implements ActionListener {
 			show(false);
 	}
 
+	/**
+	 * Clean up the memory used with the form the application is closed.
+	 */
 	public void close() {
 		frame.dispose();
 	}

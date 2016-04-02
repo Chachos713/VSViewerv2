@@ -14,6 +14,12 @@ import javax.swing.JMenuItem;
 import Panels.MolGridPanel;
 import Util.Database;
 
+/**
+ * The molecule gridview from for the main program.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class MolGridView implements MouseListener, ActionListener {
 	private MolGridPanel mgp;
 	private ThreeDimView tdv;
@@ -21,6 +27,17 @@ public class MolGridView implements MouseListener, ActionListener {
 	private JFrame frame;
 	private int dim;
 
+	/**
+	 * Creates a molecule gridview form based on a database, with links to a 3D
+	 * view and a Comment view.
+	 * 
+	 * @param d
+	 *            The database of molecules.
+	 * @param t
+	 *            The 3D view.
+	 * @param c
+	 *            The Comment view.
+	 */
 	public MolGridView(Database d, ThreeDimView t, CommentView c) {
 		dim = d.getMolecule(0).getDimension();
 
@@ -37,6 +54,11 @@ public class MolGridView implements MouseListener, ActionListener {
 		frame.pack();
 	}
 
+	/**
+	 * Creates the menu bar for the molecule gridview.
+	 * 
+	 * @return The menu bar for the molecule gridview.
+	 */
 	private JMenuBar creatMenuBar() {
 		JMenuBar bar = new JMenuBar();
 
@@ -71,10 +93,16 @@ public class MolGridView implements MouseListener, ActionListener {
 		cv.setMolecule(m, false);
 	}
 
+	/**
+	 * Shows the molecule grid view form.
+	 */
 	public void show() {
 		frame.setVisible(dim >= 2 && mgp.getNumMols() > 0 && mgp.display());
 	}
 
+	/**
+	 * Frees all the memory associated with molecule gridview.
+	 */
 	public void close() {
 		frame.dispose();
 	}

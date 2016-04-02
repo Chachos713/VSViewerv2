@@ -19,6 +19,12 @@ import javax.swing.JMenuItem;
 import Panels.ScatterPlotPanel;
 import Util.Database;
 
+/**
+ * The scatterplot form for the main program.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class ScatterPlotView implements MouseListener, MouseMotionListener,
 		MouseWheelListener, ActionListener, WindowListener {
 	private ScatterPlotPanel spp;
@@ -27,6 +33,19 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 	private ThreeDimView tdv;
 	private JFrame frame;
 
+	/**
+	 * Creates a scatterplot view based on a database, with links to a Comment
+	 * view, Molecule Gridview, and a 3D view.
+	 * 
+	 * @param d
+	 *            The database of molecules.
+	 * @param c
+	 *            The Comment view.
+	 * @param m
+	 *            The Molecule Gridview.
+	 * @param t
+	 *            The 3D view.
+	 */
 	public ScatterPlotView(Database d, CommentView c, MolGridView m,
 			ThreeDimView t) {
 
@@ -46,6 +65,11 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 		frame.pack();
 	}
 
+	/**
+	 * Creates the menu bar for the scatterplot view.
+	 * 
+	 * @return The menu bar to be used for the scatterplot view.
+	 */
 	private JMenuBar createMenuBar() {
 		JMenuBar menu = new JMenuBar();
 
@@ -94,7 +118,7 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 		search.setActionCommand("TC");
 		search.setMnemonic('c');
 		search.addActionListener(this);
-		
+
 		JMenuItem lsrl = new JMenuItem("Line of Best Fit");
 		lsrl.setActionCommand("TL");
 		lsrl.setMnemonic('l');
@@ -150,6 +174,9 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 		return menu;
 	}
 
+	/**
+	 * Starts the main program by displaying the scatterplot view.
+	 */
 	public void run() {
 		frame.setVisible(true);
 	}
