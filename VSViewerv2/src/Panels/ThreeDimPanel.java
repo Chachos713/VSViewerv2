@@ -25,6 +25,13 @@ import Util.KFileChooser;
 import Util.VirtualViewer;
 import Views.ThreeDimView;
 
+/**
+ * This class is the panel to create all the 3D visualization of the molecules.
+ * It has some options in the constructor as to what it can do.
+ * 
+ * @author Kyle Diller
+ *
+ */
 @SuppressWarnings("serial")
 public class ThreeDimPanel extends JPanel implements Observer {
 	private VirtualViewer vv;
@@ -36,6 +43,18 @@ public class ThreeDimPanel extends JPanel implements Observer {
 	private boolean[] displayed;
 	private JPanel[] mol;
 
+	/**
+	 * Creates the panel for the 3D visualization.
+	 * 
+	 * @param d
+	 *            the database of molecules.
+	 * @param a
+	 *            the action listener for the buttons.
+	 * @param readAll
+	 *            whether to read and display all the molecules.
+	 * @param delete
+	 *            whether to allow molecules to be "deleted" from the panel.
+	 */
 	public ThreeDimPanel(Database d, ActionListener a, boolean readAll,
 			boolean delete) {
 		this.setLayout(new BorderLayout());
@@ -86,6 +105,12 @@ public class ThreeDimPanel extends JPanel implements Observer {
 		this.add(BorderLayout.EAST, dataPane);
 	}
 
+	/**
+	 * Tells the panel to display the molecule at a given index.
+	 * 
+	 * @param mol
+	 *            the index of the molecule to display.
+	 */
 	public void addMolecule(int mol) {
 		if (mol < 0)
 			return;
@@ -97,11 +122,22 @@ public class ThreeDimPanel extends JPanel implements Observer {
 		display[mol].setSelected(true);
 	}
 
+	/**
+	 * Determine if the form should be drawn.
+	 * 
+	 * @return true if the panel is to be drawn, and false otherwise.
+	 */
 	public boolean display() {
 		return data.display(3);
 	}
 
-	public void remove(int i) {
+	/**
+	 * Removes a molecule from the 3D visualizer.
+	 * 
+	 * @param i
+	 *            the index of the molecule to remove.
+	 */
+	public void removeMolecule(int i) {
 		displayed[i] = false;
 		mol[i].setVisible(false);
 
@@ -110,6 +146,13 @@ public class ThreeDimPanel extends JPanel implements Observer {
 		display[i].setSelected(false);
 	}
 
+	/**
+	 * Find which check box has changed states. Used to know which molecule to
+	 * hide or show.
+	 * 
+	 * @param source
+	 *            the reference to the checkbox that was changed.
+	 */
 	public void findChangedBox(Object source) {
 		int i = 0;
 
@@ -128,6 +171,13 @@ public class ThreeDimPanel extends JPanel implements Observer {
 		}
 	}
 
+	/**
+	 * Finds which delete button was clicked. USed to remove a molecule from the
+	 * form.
+	 * 
+	 * @param source
+	 *            the reference to the button object that was clicked.
+	 */
 	public void findButton(Object source) {
 		int i = 0;
 

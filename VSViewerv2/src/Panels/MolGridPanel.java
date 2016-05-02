@@ -24,6 +24,12 @@ import Util.Database;
 import Util.MolSorter;
 import Views.MolGridView;
 
+/**
+ * A simple form to display 2D molecular strutures.
+ * 
+ * @author Kyle Diller
+ *
+ */
 @SuppressWarnings("serial")
 public class MolGridPanel extends JPanel implements ActionListener,
 		ComponentListener, Observer {
@@ -38,6 +44,17 @@ public class MolGridPanel extends JPanel implements ActionListener,
 
 	private ArrayList<Integer> display;
 
+	/**
+	 * Creates the form for the molecules to be drawn on.
+	 * 
+	 * @param owner
+	 *            the class that will handle all the mouse clicks, and the class
+	 *            that contains the JFrame
+	 * @param d
+	 *            the database of molecules
+	 * @param mols
+	 *            the list of molecules to display
+	 */
 	public MolGridPanel(MouseListener owner, Database d, ArrayList<Integer> mols) {
 		draw = new Drawer(owner);
 		display = mols;
@@ -75,6 +92,9 @@ public class MolGridPanel extends JPanel implements ActionListener,
 		this.add(BorderLayout.CENTER, draw);
 	}
 
+	/**
+	 * Allows the user to change the dimensions of the molecules drawn.
+	 */
 	public void changeSize() {
 		SpinnerNumberModel snmW = new SpinnerNumberModel(width, 10, 1000, 10);
 		SpinnerNumberModel snmH = new SpinnerNumberModel(height, 10, 1000, 10);
@@ -102,6 +122,15 @@ public class MolGridPanel extends JPanel implements ActionListener,
 		numRows = (this.getHeight() - 20) / height;
 	}
 
+	/**
+	 * Determines which molecule was clicked.
+	 * 
+	 * @param x
+	 *            the x coordinate of the mouse click
+	 * @param y
+	 *            the y coordinate of the mouse click
+	 * @return the molecule that was clicked
+	 */
 	public int molSelected(int x, int y) {
 		int r = (y - 10) / height;
 		int c = (x - 10) / width;
@@ -161,14 +190,24 @@ public class MolGridPanel extends JPanel implements ActionListener,
 		((MolGridView) draw.getMouseListeners()[0]).show();
 	}
 
+	/**
+	 * @return the number or molecules that are drawn
+	 */
 	public int getNumMols() {
 		return display.size();
 	}
 
+	/**
+	 * @return whether to display the form or not
+	 */
 	public boolean display() {
 		return data.display(1);
 	}
 
+	/**
+	 * @param c
+	 *            the second part of the action command when file is clicked
+	 */
 	public void file(char c) {
 		switch (c) {
 		case 'S':
@@ -179,6 +218,10 @@ public class MolGridPanel extends JPanel implements ActionListener,
 		}
 	}
 
+	/**
+	 * @param c
+	 *            the second part of the action command when tools is clicked
+	 */
 	public void tools(char c) {
 		switch (c) {
 		case 'S':
@@ -187,6 +230,9 @@ public class MolGridPanel extends JPanel implements ActionListener,
 		}
 	}
 
+	/**
+	 * Sorts the molecules based on a data label
+	 */
 	private void sort() {
 		SortPanel sort = new SortPanel(data.getLabel());
 
@@ -210,6 +256,12 @@ public class MolGridPanel extends JPanel implements ActionListener,
 		this.repaint();
 	}
 
+	/**
+	 * Draws the molecules on the form
+	 * 
+	 * @author Kyle Diller
+	 *
+	 */
 	private class Drawer extends JPanel {
 		public Drawer(MouseListener ml) {
 			this.addMouseListener(ml);

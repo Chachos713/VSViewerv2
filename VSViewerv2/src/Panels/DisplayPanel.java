@@ -16,8 +16,36 @@ import javax.swing.ScrollPaneConstants;
 
 import Util.DataLabel;
 
+/**
+ * A simple panel that allows the user to change what value to put on the x and
+ * y axis, as well as to color by and size by, and what value to take the log
+ * of.
+ * 
+ * @author Kyle Diller
+ *
+ */
 @SuppressWarnings("serial")
 public class DisplayPanel extends JPanel {
+	/**
+	 * Creates the display panel to allow the user to interact with.
+	 * 
+	 * @param labels
+	 *            the list of data labels
+	 * @param xaxis
+	 *            the current value for the x axis
+	 * @param yaxis
+	 *            the current value for the y axis
+	 * @param caxis
+	 *            the current value for the color by
+	 * @param saxis
+	 *            the current value for the size by
+	 * @param sMin
+	 *            the current minimum for the size by
+	 * @param sMax
+	 *            the current maximum for the size by
+	 * @param event
+	 *            the action listener for whenever a new value is changed
+	 */
 	public DisplayPanel(ArrayList<DataLabel> labels, int xaxis, int yaxis,
 			int caxis, int saxis, int sMin, int sMax, ActionListener event) {
 
@@ -117,10 +145,10 @@ public class DisplayPanel extends JPanel {
 		buttons.setPreferredSize(new Dimension(100, 300));
 
 		this.add(buttons);
-		
+
 		Box lPanel = Box.createVerticalBox();
 		lPanel.add(new JLabel("Log Options"));
-		
+
 		JCheckBox ltemp;
 
 		for (int i = 0; i < labels.size(); i++) {

@@ -24,6 +24,13 @@ import Util.DataLabel;
 import Util.Database;
 import Views.CommentView;
 
+/**
+ * A simple panel to dipslay the comments, 2D structure, and data associated
+ * with a given molecule.
+ * 
+ * @author Kyle Diller
+ *
+ */
 @SuppressWarnings("serial")
 public class CommentPanel extends JPanel implements Observer {
 	private Database data;
@@ -36,6 +43,15 @@ public class CommentPanel extends JPanel implements Observer {
 
 	private ArrayList<DataLabel> label;
 
+	/**
+	 * Creates the view for the user to interact with.
+	 * 
+	 * @param d
+	 *            the database of molecules
+	 * @param c
+	 *            the action listener for which the comments are to be added to
+	 *            a molecule
+	 */
 	public CommentPanel(Database d, ActionListener c) {
 		data = d;
 		d.addObserver(this);
@@ -107,15 +123,27 @@ public class CommentPanel extends JPanel implements Observer {
 		label = d.getLabel();
 	}
 
+	/**
+	 * @return whether to display the form or not
+	 */
 	public boolean display() {
 		return data.display(2);
 	}
 
+	/**
+	 * Changes which molecule is displayed
+	 * 
+	 * @param m
+	 *            the index of the new molecule
+	 */
 	public void changeMol(int m) {
 		mol = m;
 		updateSelected();
 	}
 
+	/**
+	 * Updates the form for the user, when a molecule is changed
+	 */
 	public void updateSelected() {
 		molList.clear();
 		dataDisplay.setText("");
@@ -137,10 +165,22 @@ public class CommentPanel extends JPanel implements Observer {
 		this.repaint();
 	}
 
+	/**
+	 * Compare the molecules against the current molecule
+	 * 
+	 * @param d3
+	 *            3D comparison or 2D
+	 */
 	public void compare(boolean d3) {
 		data.compare(mol, d3);
 	}
 
+	/**
+	 * When a button is clicked this method controls what is to be done
+	 * 
+	 * @param e
+	 *            the action event
+	 */
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		String comment = null;
@@ -197,6 +237,12 @@ public class CommentPanel extends JPanel implements Observer {
 		this.repaint();
 	}
 
+	/**
+	 * Used to draw the 2D structure
+	 * 
+	 * @author Kyle Diller
+	 *
+	 */
 	private class DrawMol extends JPanel {
 		public DrawMol() {
 			this.setPreferredSize(new Dimension(210, 110));

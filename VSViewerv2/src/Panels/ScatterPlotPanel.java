@@ -39,6 +39,12 @@ import Util.DataLabel;
 import Util.Database;
 import Util.KFileChooser;
 
+/**
+ * A simple form for displaying the scatter plot
+ * 
+ * @author Kyle Diller
+ *
+ */
 @SuppressWarnings("serial")
 public class ScatterPlotPanel extends JPanel implements ActionListener,
 		Observer {
@@ -65,6 +71,15 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 	private boolean drawLSRL;
 	private double rBound;
 
+	/**
+	 * Creates the panel for the scatter plot to be drawn on.
+	 * 
+	 * @param d
+	 *            the database of molecules
+	 * @param owner
+	 *            the event listener and class that holds the reference to this
+	 *            object
+	 */
 	public ScatterPlotPanel(Database d, EventListener owner) {
 		data = d;
 		d.addObserver(this);
@@ -126,6 +141,9 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		molSide.setVisible(data.getMolecule(0).getDimension() >= 2);
 	}
 
+	/**
+	 * Draws the scatter plot on the panelS
+	 */
 	public void paintComponent(Graphics g) {
 		g.setColor(Color.black);
 		Font f = new Font("SansSerif", Font.BOLD, 12);
@@ -134,11 +152,13 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		Dimension d = this.getSize();
 		g.clearRect(0, 0, (int) d.getWidth(), (int) d.getHeight());
 
+		// Gets the labels for each axis
 		String x = labels.get(xaxis).getLabel();
 		String y = labels.get(yaxis).getLabel();
 		String c = caxis == -1 ? null : labels.get(caxis).getLabel();
 		String s = saxis == -1 ? null : labels.get(saxis).getLabel();
 
+		// Draws the borders
 		drawVerticalCenteredString(y, 10, (int) (d.getHeight() / 2), g);
 		drawCenteredString(x, (int) (d.getWidth() / 2),
 				(int) (d.getHeight() - 10), g);
@@ -155,6 +175,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		double[] sNums = new double[data.getNumMols()];
 		double[] cNums = new double[data.getNumMols()];
 
+		// Collects all the values for each axis
 		for (int i = 0; i < data.getNumMols(); i++) {
 			xNums[i] = data.getMolecule(i).getData(x);
 			yNums[i] = data.getMolecule(i).getData(y);
@@ -189,6 +210,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		xlo = ylo = slo = clo = Double.POSITIVE_INFINITY;
 		xhi = yhi = shi = chi = Double.NEGATIVE_INFINITY;
 
+		// Finds the minimum and maximum of the data
 		for (int i = 0; i < data.getNumMols(); i++) {
 			xV = xNums[i];
 			yV = yNums[i];
@@ -225,6 +247,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 			}
 		}
 
+		// Calculates the range for drawing molecules
 		double yDelta = (yhi - ylo) * .05;
 		double xDelta = (xhi - xlo) * .05;
 
@@ -243,6 +266,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		int name = -1;
 		double dis;
 
+		// Draws the points
 		for (int i = 0; i < data.getNumMols(); i++) {
 			molLoc[i] = null;
 			xV = xNums[i];
@@ -307,6 +331,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 			}
 		}
 
+		// Draws the minimum and maximum values on the axes
 		xlo = Calculator.round(xlo + (xhi - xlo)
 				* (((-xLoc) / (this.getWidth() - 40)) * (1 / xZoom)), 3);
 		xhi = Calculator.round(xlo + (xhi - xlo)
@@ -329,6 +354,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		drawVerticalCenteredString("" + yhi, 10, 45, g);
 		drawVerticalCenteredString("" + ylo, 10, (int) d.getHeight() - 45, g);
 
+		// Draws the circle
 		if (circ != null) {
 			for (int i = 0; i < circ.size() - 1; i++) {
 				g.drawLine(circ.get(i).x, circ.get(i).y, circ.get(i + 1).x,
@@ -336,6 +362,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 			}
 		}
 
+		// Draws molecule name hovered over
 		if (name >= 0) {
 			g.drawString(data.getMolecule(name).getName(), hover.x, hover.y);
 			hoveredMol = name;
@@ -344,6 +371,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 						&& data.display(0));
 		}
 
+		// Draws LSRL if need be
 		double[] lsrl = Calculator.LSRL(molLoc);
 
 		double mYlo = lsrl[0] * 20 + lsrl[1];
@@ -357,6 +385,18 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		pd.repaint();
 	}
 
+	/**
+	 * Draws a centered screen around a point
+	 * 
+	 * @param s
+	 *            the string to draw
+	 * @param u
+	 *            the x center
+	 * @param v
+	 *            the y center
+	 * @param g
+	 *            the graphics object to draw it on
+	 */
 	public void drawCenteredString(String s, int u, int v, Graphics g) {
 		FontMetrics fm = g.getFontMetrics();
 		int x = u - fm.stringWidth(s) / 2;
@@ -364,6 +404,18 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		g.drawString(s, x, y);
 	}
 
+	/**
+	 * Draws a vertical string centered around a point
+	 * 
+	 * @param s
+	 *            the string
+	 * @param u
+	 *            the x center
+	 * @param d
+	 *            the y center
+	 * @param g
+	 *            the graphics object to draw it on
+	 */
 	public void drawVerticalCenteredString(String s, int u, int d, Graphics g) {
 		FontMetrics fm = g.getFontMetrics();
 		Graphics2D g2 = (Graphics2D) g;
@@ -374,6 +426,9 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		g2.rotate(Math.PI / 2.0);
 	}
 
+	/**
+	 * Shows the display options for the scatter plot
+	 */
 	public void displayOptions() {
 		DisplayPanel d = new DisplayPanel(labels, xaxis, yaxis, caxis, saxis,
 				sMin, sMax, this);
@@ -382,6 +437,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 				JOptionPane.OK_CANCEL_OPTION);
 	}
 
+	/**
+	 * Used to zomm in and out of the form
+	 * 
+	 * @param arg0
+	 *            the mouse wheel event for how much to zoom
+	 */
 	public void mouseWheelMoved(MouseWheelEvent arg0) {
 		if (arg0.getWheelRotation() < 0) {
 			xZoom *= 1.10;
@@ -394,6 +455,13 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		this.repaint();
 	}
 
+	/**
+	 * Determines which molecule was clicked on the scatter plot
+	 * 
+	 * @param arg0
+	 *            the mouse click event
+	 * @return if a molecule was clicked or not
+	 */
 	public boolean mouseClicked(MouseEvent arg0) {
 		int delta = arg0.getButton() == 1 ? 1 : -1;
 
@@ -423,6 +491,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		return false;
 	}
 
+	/**
+	 * Starts the circling tool
+	 * 
+	 * @param arg0
+	 *            the mouse event to get the first point
+	 */
 	public void mousePressed(MouseEvent arg0) {
 		circ = new ArrayList<Point>();
 		start = arg0.getPoint();
@@ -431,6 +505,13 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		this.repaint();
 	}
 
+	/**
+	 * Ends the circling tool to show which molecules are selected
+	 * 
+	 * @param arg0
+	 *            the mouse venet of the last point
+	 * @return whether something was selected or not
+	 */
 	public boolean mouseReleased(MouseEvent arg0) {
 		circ.add(new Point(start));
 
@@ -444,6 +525,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		return good;
 	}
 
+	/**
+	 * Adds more points to the circling tool
+	 * 
+	 * @param arg0
+	 *            the mouse event of where the mouse is
+	 */
 	public void mouseDragged(MouseEvent arg0) {
 		if (button == 1) {
 			circ.add(arg0.getPoint());
@@ -459,6 +546,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		this.repaint();
 	}
 
+	/**
+	 * Changes when the mose is moved over points
+	 * 
+	 * @param arg0
+	 *            the mouse event for where the mouse is
+	 */
 	public void mouseMoved(MouseEvent arg0) {
 		hover = arg0.getPoint();
 		this.repaint();
@@ -503,10 +596,20 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		this.repaint();
 	}
 
+	/**
+	 * @return which molecule was clicked last
+	 */
 	public int getSelected() {
 		return data.getLastClicked();
 	}
 
+	/**
+	 * Do something with a file menu item selected
+	 * 
+	 * @param c
+	 *            the second char on the action command string
+	 * @return whether to close the form or not
+	 */
 	public boolean fileChoices(char c) {
 		KFileChooser kfc = KFileChooser.create();
 		int choice;
@@ -553,6 +656,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		return false;
 	}
 
+	/**
+	 * Do something from the tools menu
+	 * 
+	 * @param s
+	 *            the resulting string from the action command
+	 */
 	public void toolChoices(String s) {
 		char c = s.charAt(0);
 		switch (c) {
@@ -577,6 +686,9 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		}
 	}
 
+	/**
+	 * Changes the values for the lsrl to display by
+	 */
 	public void lsrlSettings() {
 		Box b = Box.createVerticalBox();
 
@@ -606,6 +718,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 
+	/**
+	 * Deals with the popup window for which molecule is hovered over
+	 * 
+	 * @author Kyle Diller
+	 *
+	 */
 	private class PopupDisplay extends JPanel {
 
 		public PopupDisplay() {
@@ -630,6 +748,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		}
 	}
 
+	/**
+	 * Compare the structures of molecules against the one that is hovered over
+	 * 
+	 * @author Kyle Diller
+	 *
+	 */
 	private class Compare implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent arg0) {

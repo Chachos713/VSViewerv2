@@ -20,6 +20,13 @@ import javax.swing.event.ListSelectionListener;
 import Util.DataLabel;
 import Util.Database;
 
+/**
+ * The simple panel that allows the user to separate molecules based on a data
+ * label and value.
+ * 
+ * @author Kyle Diller
+ *
+ */
 @SuppressWarnings("serial")
 public class SplitPanel extends JPanel implements ListSelectionListener,
 		ChangeListener {
@@ -30,6 +37,12 @@ public class SplitPanel extends JPanel implements ListSelectionListener,
 	private JSlider slide;
 	private JLabel value;
 
+	/**
+	 * Creates the panel for the user to inteacrt with.
+	 * 
+	 * @param d
+	 *            the database of molecules, and data labels
+	 */
 	public SplitPanel(Database d) {
 		this.setLayout(new BorderLayout());
 		data = d;
@@ -76,14 +89,23 @@ public class SplitPanel extends JPanel implements ListSelectionListener,
 		labels.setSelectedIndex(0);
 	}
 
+	/**
+	 * @return the value that determines the dividing line
+	 */
 	public double getValue() {
 		return slide.getValue();
 	}
 
+	/**
+	 * @return the name of the new data label
+	 */
 	public String getName() {
 		return name.getText();
 	}
 
+	/**
+	 * @return the data label to divide by
+	 */
 	public String getLabel() {
 		return labels.getSelectedValue();
 	}

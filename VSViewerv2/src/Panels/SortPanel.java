@@ -13,11 +13,23 @@ import javax.swing.ScrollPaneConstants;
 
 import Util.DataLabel;
 
+/**
+ * A simple panel for sorting the molecules.
+ * 
+ * @author Kyle Diller
+ *
+ */
 @SuppressWarnings("serial")
 public class SortPanel extends Box {
 	private JList<String> labels;
 	private JCheckBox desc;
 
+	/**
+	 * Creates a sorting panel based on the list of data labels.
+	 * 
+	 * @param label
+	 *            the list of data labels.
+	 */
 	public SortPanel(ArrayList<DataLabel> label) {
 		super(BoxLayout.Y_AXIS);
 
@@ -42,10 +54,20 @@ public class SortPanel extends Box {
 		this.add(desc);
 	}
 
+	/**
+	 * Returns whether the descending check box is selected or not.
+	 * 
+	 * @return true is the descending check box is selected.
+	 */
 	public boolean isDescending() {
 		return desc.isSelected();
 	}
 
+	/**
+	 * Gets which data label is selected to sort by.
+	 * 
+	 * @return the selected data label.
+	 */
 	public String getLabel() {
 		return labels.getSelectedValue();
 	}
