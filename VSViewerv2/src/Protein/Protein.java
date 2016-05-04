@@ -9,7 +9,24 @@ import javax.media.j3d.BranchGroup;
 import Molecule.Bond;
 import Util.PeriodicTable;
 
+/**
+ * A simple representation of a protein. Extends BranchGroup so that this class
+ * can store the 3D coordinates, and be easily added to the 3D viewer, without
+ * anyone else knowing the position of all atoms.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class Protein extends BranchGroup {
+	/**
+	 * Reads a protein from a file.
+	 * 
+	 * @param file
+	 *            the file to read
+	 * @return a protein read from the file
+	 * @throws Exception
+	 *             if there is a problem reading the file
+	 */
 	public static Protein read(String file) throws Exception {
 		Scanner sc = null;
 		Protein pro = null;
@@ -42,6 +59,8 @@ public class Protein extends BranchGroup {
 			ArrayList<Bond> bond = new ArrayList<Bond>();
 			ArrayList<Residue> residues = new ArrayList<Residue>();
 
+			// Creates the bonds between the atoms and places each atom in it's
+			// respective residue
 			for (int i = 0; i < na; i++) {
 				temp = atomLines.get(i);
 				chain = temp.charAt(21);
@@ -111,6 +130,16 @@ public class Protein extends BranchGroup {
 	private ArrayList<Residue> residues;
 	private ArrayList<Integer> chain;
 
+	/**
+	 * Creates a protein
+	 * 
+	 * @param pa
+	 *            the atoms within the protein
+	 * @param b
+	 *            the bonds between atoms
+	 * @param r
+	 *            the list of residues
+	 */
 	public Protein(ProAtom[] pa, Bond[] b, ArrayList<Residue> r) {
 		atms = pa;
 		bnds = b;
@@ -138,6 +167,9 @@ public class Protein extends BranchGroup {
 		System.out.println(chain.size());
 	}
 
+	/**
+	 * Creates the chain of atoms that form a residue.
+	 */
 	private void createChain() {
 		Integer c;
 		Integer ca;
