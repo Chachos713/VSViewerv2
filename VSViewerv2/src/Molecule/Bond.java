@@ -15,10 +15,33 @@ import Util.PeriodicTable;
 
 import com.sun.j3d.utils.geometry.Cylinder;
 
+/**
+ * Stores the atoms that are involved in the bond. Extends TransformGroup so
+ * that it deals with the two end points of the atoms.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class Bond extends TransformGroup {
 	private Atom a1, a2;
 	private int type; // Needs to be stored but might not be used
 
+	/**
+	 * Creates a bond
+	 * 
+	 * @param a
+	 *            the first atom
+	 * @param b
+	 *            the second atom
+	 * @param t
+	 *            the bond type
+	 * @param is3D
+	 *            determine to draw the cylinder
+	 * @param color
+	 *            the color of the bond if it is part of a protein
+	 * @param pro
+	 *            is parte of a protein
+	 */
 	public Bond(Atom a, Atom b, int t, boolean is3D, float[] color, boolean pro) {
 		a1 = a;
 		a2 = b;
@@ -32,6 +55,14 @@ public class Bond extends TransformGroup {
 		}
 	}
 
+	/**
+	 * Copies a bond
+	 * 
+	 * @param other
+	 *            the bond to copy
+	 * @param is3D
+	 *            drar the 3D structure or not
+	 */
 	public Bond(Bond other, boolean is3D) {
 		this(other.a1, other.a2, other.type, is3D, null, false);
 	}
@@ -67,6 +98,13 @@ public class Bond extends TransformGroup {
 		this.addChild(objTrans2);
 	}
 
+	/**
+	 * Normalizes a vector
+	 * 
+	 * @param v1
+	 *            the vector to noramlize
+	 * @return the normalized vector
+	 */
 	private Vector3f convertCoord(Vector3f v1) {
 		Vector3f temp = new Vector3f();
 
@@ -77,6 +115,15 @@ public class Bond extends TransformGroup {
 		return temp;
 	}
 
+	/**
+	 * Gets the color for a given atom
+	 * 
+	 * @param a
+	 *            the atom to get the color of
+	 * @param pro
+	 *            whether the atom is part of a protein or not
+	 * @return the color of a given atom
+	 */
 	private ColoringAttributes getAtomColor(Atom a, boolean pro) {
 		Color c = PeriodicTable.getColor(a.getType(), pro);
 		ColoringAttributes ca = new ColoringAttributes(new Color3f(c),
@@ -85,6 +132,19 @@ public class Bond extends TransformGroup {
 		return ca;
 	}
 
+	/**
+	 * Creates a cylinder to represent the bond
+	 * 
+	 * @param v1
+	 *            the vector of atom 1
+	 * @param v2
+	 *            the vector of atom 2
+	 * @param rad
+	 *            the radius of the cylinder
+	 * @param ca
+	 *            the color of the bond section
+	 * @return a cylinder for the bond
+	 */
 	private TransformGroup createCylinder(Vector3f v1, Vector3f v2, float rad,
 			ColoringAttributes ca) {
 		float ht;
@@ -158,22 +218,37 @@ public class Bond extends TransformGroup {
 		return tG;
 	}
 
+	/**
+	 * @return the first atom
+	 */
 	public Atom getA1() {
 		return a1;
 	}
 
+	/**
+	 * @return the second atom
+	 */
 	public Atom getA2() {
 		return a2;
 	}
 
+	/**
+	 * @return the bond type
+	 */
 	public int getType() {
 		return type;
 	}
 
+	/**
+	 * @return the string representation of the bond in a vsv file
+	 */
 	public String toString() {
 		return (a1.getID() + 1) + ":" + (a2.getID() + 1) + ":" + type;
 	}
 
+	/**
+	 * @return whether to draw the bond or not
+	 */
 	public boolean doDraw() {
 		return a1.isPolarH() || a2.isPolarH();
 	}

@@ -18,10 +18,43 @@ import Util.FingerprintMaker;
 import Util.MissingPartException;
 import Util.PeriodicTable;
 
+/**
+ * A simple class to store and handle many of the molecular operations. Extends
+ * BracnhGroup so that external classes do not know what the location of the
+ * atoms are.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class Molecule extends BranchGroup {
 	private static final String D2C = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~@#$%^&*()_+-=[]{};:,<.>?/|";
 	private static final int D2C_MAX = 90;
 
+	/**
+	 * Reads a molecule from a vsv file.
+	 * 
+	 * @param sc
+	 *            the scanner that reads the file
+	 * @param lo2d
+	 *            the minimum for 2D coordinates
+	 * @param hi2d
+	 *            the maximum for 2D coordinates
+	 * @param xlo
+	 *            the minimum x 3D coordinate
+	 * @param xhi
+	 *            the maximum x 3D coordinate
+	 * @param ylo
+	 *            the minimum y 3D coordinate
+	 * @param yhi
+	 *            the maximum y 3D coordinate
+	 * @param zlo
+	 *            the minimum z 3D coordinate
+	 * @param zhi
+	 *            the maximum z 3D coordinate
+	 * @return a molecule that is read from the scanner
+	 * @throws Exception
+	 *             if there is a problem reading from the file
+	 */
 	public static Molecule readMoleculeVSV(Scanner sc, double lo2d,
 			double hi2d, double xlo, double xhi, double ylo, double yhi,
 			double zlo, double zhi) throws Exception {
@@ -41,6 +74,7 @@ public class Molecule extends BranchGroup {
 
 		String line = "";
 
+		// Reads in a molecule from the scanner
 		while (sc.hasNext()) {
 			line = sc.nextLine();
 
@@ -79,6 +113,7 @@ public class Molecule extends BranchGroup {
 		if (!line.equals("</MOLECULE>"))
 			throw new EndFileException("File Ended Early");
 
+		// Checks that all the informatio is there
 		try {
 			a = new Atom[typesA.length];
 			b = new Bond[typesB.length];
@@ -94,6 +129,7 @@ public class Molecule extends BranchGroup {
 		int type;
 		int i = 0;
 
+		// Converts the lines into the values for a molecule
 		try {
 			for (i = 0; i < a.length; i++) {
 
@@ -102,10 +138,12 @@ public class Molecule extends BranchGroup {
 				d3sub = three.substring(d3loc, d3loc + 6);
 				d3loc += 6;
 
+				// Gets an atoms 3D coordinates
 				x3 = getDouble(d3sub.substring(0, 2)) * (xhi - xlo) + xlo;
 				y3 = getDouble(d3sub.substring(2, 4)) * (yhi - ylo) + ylo;
 				z3 = getDouble(d3sub.substring(4, 6)) * (zhi - zlo) + zlo;
 
+				// Gets an atoms 2D coordinates
 				if (type != 1) {
 					d2sub = two.substring(d2loc, d2loc + 4);
 					d2loc += 4;
@@ -126,6 +164,7 @@ public class Molecule extends BranchGroup {
 					"Missing Atom Location Information: " + (i + 1));
 		}
 
+		// Reads in the bonds
 		int a1, a2, t;
 		String[] bond;
 		for (i = 0; i < b.length; i++) {
@@ -137,6 +176,7 @@ public class Molecule extends BranchGroup {
 			b[i] = new Bond(a[a1], a[a2], t, true, null, false);
 		}
 
+		// Creates the fingerprints
 		ArrayList<Integer> fp3 = FingerprintMaker.make3d(a, xlo, ylo, zlo,
 				(int) ((xhi - xlo) / FingerprintMaker.DX),
 				(int) ((yhi - ylo) / FingerprintMaker.DX),
@@ -147,10 +187,26 @@ public class Molecule extends BranchGroup {
 		return new Molecule(name, a, b, c, d, two, three, fp3, fp2);
 	}
 
+	/**
+	 * Converts a base 90 string into a double value between 0 and 1
+	 * 
+	 * @param substring
+	 *            the base 90 string
+	 * @return a double between 0 and 1
+	 */
 	public static double getDouble(String substring) {
 		return getPer(substring.charAt(0), substring.charAt(1));
 	}
 
+	/**
+	 * Converts 2 base 90 characters into a double between 0 and 1
+	 * 
+	 * @param c1
+	 *            the high order character
+	 * @param c2
+	 *            the low order character
+	 * @return a double between 0 and 1
+	 */
 	private static double getPer(char c1, char c2) {
 		double per = 0.0;
 		int b1 = 0;
@@ -170,6 +226,15 @@ public class Molecule extends BranchGroup {
 		return per;
 	}
 
+	/**
+	 * Reads a molecule from a sd file
+	 * 
+	 * @param sc
+	 *            the scanner reading from a sd file
+	 * @return the molecule read from a sd file
+	 * @throws Exception
+	 *             if there is a problem reading from the file
+	 */
 	public static Molecule readSDF(Scanner sc) throws Exception {
 		if (!PeriodicTable.created())
 			PeriodicTable.create();
@@ -191,6 +256,7 @@ public class Molecule extends BranchGroup {
 		String type;
 		int t;
 
+		// Reads the atoms
 		for (int i = 0; i < na; i++) {
 			x = sc.nextDouble();
 			y = sc.nextDouble();
@@ -204,6 +270,7 @@ public class Molecule extends BranchGroup {
 
 		int a1, a2;
 
+		// Reads the bonds
 		for (int i = 0; i < nb; i++) {
 			a1 = sc.nextInt();
 			a2 = sc.nextInt();
@@ -215,6 +282,9 @@ public class Molecule extends BranchGroup {
 		sc.nextLine();
 		sc.nextLine();
 
+		// Creates the molecule
+		// Note the 2D and 3D strings are jokes
+		// There are no fingerprints created for this
 		return new Molecule(name, atms, bnds, new ArrayList<Comment>(),
 				new ArrayList<DataPt>(), "Zwei", "Drei",
 				new ArrayList<Integer>(), new ArrayList<Integer>());
@@ -230,6 +300,30 @@ public class Molecule extends BranchGroup {
 
 	private String d3, d2;
 
+	/**
+	 * Creates a molecule with all thie data. This constructor is private
+	 * because there is no need to create a molecule from anything other than a
+	 * file. This also copies all the data to new memory locations.
+	 * 
+	 * @param n
+	 *            the name of the molecule
+	 * @param a
+	 *            the list of atoms
+	 * @param b
+	 *            the list of bonds
+	 * @param c
+	 *            the list of comments
+	 * @param d
+	 *            the list of data points
+	 * @param two
+	 *            the 2D vsv string (if from sd file it is "zwei")
+	 * @param three
+	 *            the 3D vsv string (if from sd file it is "drei")
+	 * @param fp3
+	 *            the 3D fingerprint
+	 * @param fp2
+	 *            the 2D fingerprint
+	 */
 	private Molecule(String n, Atom[] a, Bond[] b, ArrayList<Comment> c,
 			ArrayList<DataPt> d, String two, String three,
 			ArrayList<Integer> fp3, ArrayList<Integer> fp2) {
@@ -276,15 +370,30 @@ public class Molecule extends BranchGroup {
 		this.addChild(objTg);
 	}
 
+	/**
+	 * Copies a molecule to a new memory location.
+	 * 
+	 * @param other
+	 *            the molecule to copy
+	 */
 	public Molecule(Molecule other) {
 		this(other.name, other.atms, other.bnds, other.comments, other.dataPts,
 				other.d2, other.d3, other.fp3d, other.fp2d);
 	}
 
+	/**
+	 * @return the name of the molecule
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Adds a comment to the molecule
+	 * 
+	 * @param c
+	 *            the comment to add
+	 */
 	public void addComment(String c) {
 		c = c.toLowerCase();
 		for (Comment com : comments) {
@@ -295,6 +404,12 @@ public class Molecule extends BranchGroup {
 		comments.add(new Comment(c));
 	}
 
+	/**
+	 * Removes a comment from the molecule
+	 * 
+	 * @param c
+	 *            the comment ot remove
+	 */
 	public void removeComment(String c) {
 		for (Comment com : comments) {
 			if (com.getComment().equals(c)) {
@@ -304,6 +419,14 @@ public class Molecule extends BranchGroup {
 		}
 	}
 
+	/**
+	 * Gets the data point associated with a certain label
+	 * 
+	 * @param label
+	 *            the label to search for
+	 * @return the data point for the given label. Give Negative Infinity if the
+	 *         label is not in the molecule.
+	 */
 	public double getData(String label) {
 		for (DataPt d : dataPts) {
 			if (d.getLabel().equals(label))
@@ -313,6 +436,9 @@ public class Molecule extends BranchGroup {
 		return Double.NEGATIVE_INFINITY;
 	}
 
+	/**
+	 * @return the list of comments
+	 */
 	public ArrayList<String> getComments() {
 		ArrayList<String> com = new ArrayList<String>();
 
@@ -323,6 +449,17 @@ public class Molecule extends BranchGroup {
 		return com;
 	}
 
+	/**
+	 * Creates a master list of all data labels and comments. Adds labels and
+	 * comments not in the master lists. With the labels, it also checks to see
+	 * if there is at least one molecule with a positive value associated with
+	 * that label.
+	 * 
+	 * @param labelList
+	 *            the master list of data labels
+	 * @param commentList
+	 *            the master list of comments
+	 */
 	public void addToList(ArrayList<DataLabel> labelList,
 			ArrayList<String> commentList) {
 		for (Comment c : comments) {
@@ -348,10 +485,27 @@ public class Molecule extends BranchGroup {
 		}
 	}
 
+	/**
+	 * Draws a 2D depiction of the molecule
+	 * 
+	 * @param g
+	 *            the graphics to draw on
+	 * @param x
+	 *            the min x coordinate
+	 * @param y
+	 *            the min y coordinate
+	 * @param width
+	 *            the width of the box to draw the molecule in
+	 * @param height
+	 *            the height of the box to draw the molecule in
+	 * @param k
+	 *            the index of the molecule when it is drawn
+	 */
 	public void draw(Graphics g, int x, int y, int width, int height, int k) {
 		if (d2.isEmpty())
 			return;
 
+		// Draws the borders of the box
 		g.setColor(Color.black);
 		g.drawLine(x, y, x + width, y);
 		g.drawLine(x, y, x, y + height);
@@ -365,6 +519,7 @@ public class Molecule extends BranchGroup {
 		width -= 10;
 		height -= dy + 5;
 
+		// Gets the min and max for the x and y coordinates
 		double xMin = Double.POSITIVE_INFINITY;
 		double xMax = Double.NEGATIVE_INFINITY;
 		double yMin = Double.POSITIVE_INFINITY;
@@ -380,6 +535,7 @@ public class Molecule extends BranchGroup {
 			yMax = Math.max(yMax, atms[i].y2d);
 		}
 
+		// Converts the min and max to a ratio for easy to draw coordinates
 		double xRatio = width / (xMax - xMin);
 		double yRatio = height / (yMax - yMin);
 
@@ -392,6 +548,7 @@ public class Molecule extends BranchGroup {
 		int x1, x2, y1, y2;
 		double vx, vy, dist;
 
+		// Draws all the bonds
 		for (int i = 0; i < bnds.length; i++) {
 			a1 = bnds[i].getA1();
 			a2 = bnds[i].getA2();
@@ -433,6 +590,7 @@ public class Molecule extends BranchGroup {
 
 		String tmp;
 
+		// Draws all non carbon atoms
 		for (int i = 0; i < atms.length; i++) {
 			if (atms[i].getType() == 1 || atms[i].getType() == 6)
 				continue;
@@ -448,6 +606,7 @@ public class Molecule extends BranchGroup {
 			drawCenteredString(tmp, (int) (x1), (int) (y1), g);
 		}
 
+		// Displays the name
 		if (k > -1)
 			drawCenteredString(k + " : " + name, (int) ((2 * x + width) / 2.0),
 					(int) (y + height + 13), g);
@@ -456,6 +615,18 @@ public class Molecule extends BranchGroup {
 					+ height + 13), g);
 	}
 
+	/**
+	 * Draws a centered string for the name and atom types
+	 * 
+	 * @param s
+	 *            the string to draw
+	 * @param u
+	 *            the center x coordinate
+	 * @param v
+	 *            the center y coordiante
+	 * @param g
+	 *            the graphics to draw it on
+	 */
 	private void drawCenteredString(String s, int u, int v, Graphics g) {
 		FontMetrics fm = g.getFontMetrics();
 		int x = u - fm.stringWidth(s) / 2;
@@ -463,6 +634,14 @@ public class Molecule extends BranchGroup {
 		g.drawString(s, x, y);
 	}
 
+	/**
+	 * Saves the current molecule to a vsv file.
+	 * 
+	 * @param os
+	 *            the output stream
+	 * @throws Exception
+	 *             if there is a problem writing to the stream
+	 */
 	public void saveVSV(FileWriter os) throws Exception {
 		os.write("<MOLECULE>" + name);
 
@@ -500,6 +679,16 @@ public class Molecule extends BranchGroup {
 		os.write("\n</MOLECULE>");
 	}
 
+	/**
+	 * Saves this molecule to a sd file
+	 * 
+	 * @param os
+	 *            the output stream to write the molecule to
+	 * @param d3
+	 *            whether to write the 2D or 3D coordinates
+	 * @throws Exception
+	 *             if there is a problem writing to the stream
+	 */
 	public void saveSDF(FileWriter os, boolean d3) throws Exception {
 		os.write(name + "\n");
 
@@ -630,6 +819,12 @@ public class Molecule extends BranchGroup {
 		os.write("M  END\n$$$$");
 	}
 
+	/**
+	 * @return what dimension them molecule can be drawn in <br>
+	 *         1 = only the data <br>
+	 *         2 = data and 2D depiction <br>
+	 *         3 = data, 2D, and 3D depiction
+	 */
 	public int getDimension() {
 		int dimension = 1;
 
@@ -642,6 +837,13 @@ public class Molecule extends BranchGroup {
 		return dimension;
 	}
 
+	/**
+	 * Checks if a comment is in this molecule
+	 * 
+	 * @param com
+	 *            the comment to check for
+	 * @return true if the molecule contains the comment
+	 */
 	public boolean hasComment(String com) {
 		for (Comment c : comments) {
 			if (c.getComment().equals(com))
@@ -651,6 +853,16 @@ public class Molecule extends BranchGroup {
 		return false;
 	}
 
+	/**
+	 * Used to split molecules based on a certain data label and value
+	 * 
+	 * @param label
+	 *            the label to split the molecule by
+	 * @param value
+	 *            the value that allows the molecule to be split by
+	 * @param dataName
+	 *            the name of the new data label
+	 */
 	public void split(String label, double value, String dataName) {
 		double v = this.getData(label);
 
@@ -659,6 +871,14 @@ public class Molecule extends BranchGroup {
 		addNewData(val, dataName);
 	}
 
+	/**
+	 * Adds a new data point to the molecule
+	 * 
+	 * @param value
+	 *            the value of the new data point
+	 * @param name
+	 *            the name of the new data point
+	 */
 	public void addNewData(double value, String name) {
 		if (this.getData(name) != Double.NEGATIVE_INFINITY)
 			return;
@@ -666,6 +886,15 @@ public class Molecule extends BranchGroup {
 		dataPts.add(new DataPt(value, name));
 	}
 
+	/**
+	 * Compares 2 fingerprints against each other
+	 * 
+	 * @param query
+	 *            the molecule to compare against
+	 * @param d3
+	 *            whether to us the 2D or 3D fingerprint
+	 * @return the percent of similarity
+	 */
 	public double compare(Molecule query, boolean d3) {
 		int numEqu = 0;
 		int i1 = 0, i2 = 0;
@@ -678,6 +907,7 @@ public class Molecule extends BranchGroup {
 			mol2 = query.fp3d;
 		}
 
+		// Loops through the fingerprints
 		while (i1 < mol1.size() && i2 < mol2.size()) {
 			k1 = mol1.get(i1);
 			k2 = mol2.get(i2);
