@@ -24,7 +24,25 @@ import javax.vecmath.Vector3d;
 import Molecule.Molecule;
 import Panels.SplitPanel;
 
+/**
+ * A simple class to maintain a list of molecules and molecular actions. Extends
+ * Observable so that it can keep track of which form to show and which form
+ * hide.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class Database extends Observable {
+	/**
+	 * Reads a file with either a sdf or vsv file extension
+	 * 
+	 * @param file
+	 *            the file that contains the database
+	 * @return the database of moleucles. If null. then the file didn't have the
+	 *         right extension.
+	 * @throws Exception
+	 *             if the file is unreadable
+	 */
 	public static Database read(String file) throws Exception {
 		if (file.endsWith(".vsv"))
 			return readVSV(file);
@@ -34,6 +52,15 @@ public class Database extends Observable {
 			return null;
 	}
 
+	/**
+	 * Reads a vsv for the database of molecules
+	 * 
+	 * @param file
+	 *            the file to read
+	 * @return the database of molecules
+	 * @throws Exception
+	 *             if there is a problem reading the file
+	 */
 	@SuppressWarnings("resource")
 	private static Database readVSV(String file) throws Exception {
 		long start = System.currentTimeMillis();
@@ -61,7 +88,9 @@ public class Database extends Observable {
 				}
 			}
 
-			// The start for a simple queue like implementation
+			// The start for a simple queue like implementation to store the
+			// molecules as they are read, because I do not know how many
+			// molecules there are
 			Node<Molecule> header = new Node<Molecule>(null);
 			Node<Molecule> last = header;
 			Molecule temp;
@@ -111,6 +140,15 @@ public class Database extends Observable {
 		}
 	}
 
+	/**
+	 * Reads a sd file for the database of molecules.
+	 * 
+	 * @param file
+	 *            the sd file with the database
+	 * @return the database of molecules
+	 * @throws Exception
+	 *             if the file is unreadable
+	 */
 	private static Database readSDF(String file) throws Exception {
 		Scanner sc = null;
 
@@ -118,6 +156,9 @@ public class Database extends Observable {
 			sc = new Scanner(new File(file));
 
 			int count = 0;
+
+			// A simple queue data structure to read in the molecules because I
+			// do not know the number of molecules
 			Node<Molecule> head = new Node<Molecule>(null);
 			Node<Molecule> tail = head;
 			Molecule temp;
@@ -162,6 +203,17 @@ public class Database extends Observable {
 
 	private boolean[] displays;
 
+	/**
+	 * Creates a database of molecules, a file that created it, and a set of
+	 * limits
+	 * 
+	 * @param l
+	 *            the limits
+	 * @param m
+	 *            the list of molecules
+	 * @param f
+	 *            the file that was read
+	 */
 	private Database(double[] l, Molecule[] m, String f) {
 		limits = l;
 		mols = m;
@@ -179,6 +231,9 @@ public class Database extends Observable {
 		displays[3] = true;
 	}
 
+	/**
+	 * Creates the master list for both the data labels and comments
+	 */
 	private void createMasterLists() {
 		commentList = new ArrayList<String>();
 		labelList = new ArrayList<DataLabel>();
@@ -188,32 +243,68 @@ public class Database extends Observable {
 		}
 	}
 
+	/**
+	 * Checks if a molecule was selected in the scatter plot
+	 * 
+	 * @param i
+	 *            the molecule to check
+	 * @return true if the molecule is selected
+	 */
 	public boolean isSelected(int i) {
 		return selected[i];
 	}
 
+	/**
+	 * @return the number of molecules
+	 */
 	public int getNumMols() {
 		return mols.length;
 	}
 
+	/**
+	 * Gets a molecule at a given index
+	 * 
+	 * @param i
+	 *            the index of the molecule
+	 * @return the molecule at the given index
+	 */
 	public Molecule getMolecule(int i) {
 		return mols[i];
 	}
 
+	/**
+	 * @return the middle of the limits
+	 */
 	public Vector3d getMiddle() {
 		return new Vector3d((float) ((limits[2] + limits[3]) / 2),
 				(float) ((limits[4] + limits[5]) / 2),
 				(float) ((limits[6] + limits[7]) / 2));
 	}
 
+	/**
+	 * @return the master list of comments
+	 */
 	public ArrayList<String> getMasterComments() {
 		return commentList;
 	}
 
+	/**
+	 * @return the master list of data labels
+	 */
 	public ArrayList<DataLabel> getLabel() {
 		return labelList;
 	}
 
+	/**
+	 * Changes, what a comment says
+	 * 
+	 * @param mol
+	 *            the index of the molecule
+	 * @param comment
+	 *            the new comment
+	 * @param add
+	 *            whether the comment is to be added or removed
+	 */
 	public void modifyComment(int mol, String comment, boolean add) {
 		changed = true;
 		if (!add) {
@@ -230,6 +321,11 @@ public class Database extends Observable {
 		this.notifyObservers();
 	}
 
+	/**
+	 * Helps to know if the database was changed when the form is being closed
+	 * 
+	 * @return true if the form can close
+	 */
 	public boolean close() {
 		if (changed) {
 			int choice = JOptionPane.showConfirmDialog(null,
@@ -254,6 +350,12 @@ public class Database extends Observable {
 		return true;
 	}
 
+	/**
+	 * Save the database to the default vsv file
+	 * 
+	 * @throws Exception
+	 *             if there is problem writing to a file
+	 */
 	public void save() throws Exception {
 		FileWriter os = new FileWriter(file);
 
@@ -270,11 +372,29 @@ public class Database extends Observable {
 		changed = false;
 	}
 
+	/**
+	 * Change where to save the databae to
+	 * 
+	 * @param newDest
+	 *            the new location to save the database to
+	 * @throws Exception
+	 *             if there is a problem writing to a file
+	 */
 	public void saveAs(String newDest) throws Exception {
 		file = newDest;
 		save();
 	}
 
+	/**
+	 * Calculates which points are selected by a circle
+	 * 
+	 * @param circ
+	 *            the polygon that is to be checked
+	 * @param molLoc
+	 *            the location of each of the molecules
+	 * @param invert
+	 *            whether to select the molecules inside or outside the polygon
+	 */
 	public void setSelected(ArrayList<Point> circ, Point2d[] molLoc,
 			boolean invert) {
 		if (molLoc == null || molLoc.length != mols.length || circ.size() < 3)
@@ -304,6 +424,16 @@ public class Database extends Observable {
 		this.notifyObservers();
 	}
 
+	/**
+	 * Change which molecule was last clicked.
+	 * 
+	 * @param x
+	 *            the x coordinate
+	 * @param y
+	 *            the y coordinate
+	 * @param molLoc
+	 *            the location of each molecule on the form
+	 */
 	public void findClicked(int x, int y, Point2d[] molLoc) {
 		double dis = 6;
 		double temp;
@@ -327,12 +457,18 @@ public class Database extends Observable {
 		this.notifyObservers();
 	}
 
+	/**
+	 * @return the molecule that was clicked last
+	 */
 	public int getLastClicked() {
 		int temp = lastClicked;
 		lastClicked = -1;
 		return temp;
 	}
 
+	/**
+	 * Creates and searches the database for all molecules with a given comment.
+	 */
 	public void searchComments() {
 		DefaultListModel<String> adder = new DefaultListModel<String>();
 		JList<String> comments = new JList<String>(adder);
@@ -366,6 +502,12 @@ public class Database extends Observable {
 		this.notifyObservers();
 	}
 
+	/**
+	 * Change whether to hide or show a given form
+	 * 
+	 * @param c
+	 *            the character to the form
+	 */
 	public void flipScreen(char c) {
 		switch (c) {
 		case 'P':
@@ -386,10 +528,21 @@ public class Database extends Observable {
 		this.notifyObservers();
 	}
 
+	/**
+	 * USed to determine which form to display and which to hide
+	 * 
+	 * @param i
+	 *            the form to check
+	 * @return true if to show the form
+	 */
 	public boolean display(int i) {
 		return displays[i];
 	}
 
+	/**
+	 * Splits the molecules based on a given data label and value. THis creates
+	 * the form or the user to select with.
+	 */
 	public void createSplit() {
 		SplitPanel sp = new SplitPanel(this);
 
@@ -417,6 +570,14 @@ public class Database extends Observable {
 		this.notifyObservers();
 	}
 
+	/**
+	 * Saves a set of molecules, and not the whole database to a vsv file
+	 * 
+	 * @param display
+	 *            the list of molecules to save
+	 * @throws Exception
+	 *             if there is a problem writing to the file
+	 */
 	public void save(ArrayList<Integer> display) throws Exception {
 		KFileChooser kfc = KFileChooser.create();
 		int choice = kfc.save(null, 1);
@@ -469,6 +630,14 @@ public class Database extends Observable {
 		}
 	}
 
+	/**
+	 * Compares molecular fingerprint against a given query.
+	 * 
+	 * @param molQuery
+	 *            the query to compare each against
+	 * @param d3
+	 *            whether to use the 3D fingerpriont of the structural
+	 */
 	public void compare(int molQuery, boolean d3) {
 		String labelName = mols[molQuery].getName() + " - Sim2D";
 

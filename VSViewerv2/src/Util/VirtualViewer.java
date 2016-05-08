@@ -29,6 +29,13 @@ import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
 import com.sun.j3d.utils.behaviors.mouse.MouseWheelZoom;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
+/**
+ * A simple 3D viewer that is meant to be protable between programs. This is not
+ * meant to only work within this project.
+ * 
+ * @author Kyle Diller
+ *
+ */
 @SuppressWarnings("serial")
 public class VirtualViewer extends JPanel {
 	private ArrayList<BranchGroup> objects;
@@ -37,6 +44,12 @@ public class VirtualViewer extends JPanel {
 	private Background backg;
 	private BoundingSphere bounds;
 
+	/**
+	 * Creates the 3D view for the 3D viewer.
+	 * 
+	 * @param middle
+	 *            the point of rotation, but does not work.
+	 */
 	public VirtualViewer(Point3d middle) {
 		setLayout(new BorderLayout());
 		GraphicsConfiguration config = SimpleUniverse
@@ -53,6 +66,13 @@ public class VirtualViewer extends JPanel {
 		this.setPreferredSize(new Dimension(1000, 1000));
 	}
 
+	/**
+	 * Creates the form to add to the viewer.
+	 * 
+	 * @param middle
+	 *            the middle of the screen
+	 * @return a brachgroup to add objects to
+	 */
 	private BranchGroup setUpScene(Point3d middle) {
 		BranchGroup scene = new BranchGroup();
 		scene.setCapability(Group.ALLOW_CHILDREN_EXTEND);
@@ -77,6 +97,14 @@ public class VirtualViewer extends JPanel {
 		return scene;
 	}
 
+	/**
+	 * Creates the lighting for the 3D view
+	 * 
+	 * @param scene
+	 *            the scene to light up
+	 * @param bounds
+	 *            the area to light
+	 */
 	private void createLights(BranchGroup scene, BoundingSphere bounds) {
 		Point3f pLightDir = new Point3f(1.0F, 1.0F, 1.0F);
 		PointLight pLight = new PointLight();
@@ -91,6 +119,9 @@ public class VirtualViewer extends JPanel {
 		scene.addChild(pLight);
 	}
 
+	/**
+	 * Sets the form to accept the keys to move the form
+	 */
 	public void addKeyBehavior() {
 		KeyNavigatorBehavior kBehavior = new KeyNavigatorBehavior(sceneRotate);
 		kBehavior.setSchedulingBounds(bounds);
@@ -101,6 +132,9 @@ public class VirtualViewer extends JPanel {
 		sceneRotate.addChild(b);
 	}
 
+	/**
+	 * Adds the wheel zoom to the view
+	 */
 	public void addZoom() {
 		MouseWheelZoom mzBehavior = new MouseWheelZoom(sceneRotate);
 		mzBehavior.setSchedulingBounds(bounds);
@@ -111,6 +145,9 @@ public class VirtualViewer extends JPanel {
 		sceneRotate.addChild(b);
 	}
 
+	/**
+	 * Allows the user to rotate the view
+	 */
 	public void addRotate() {
 		MouseRotate mrBehavior = new MouseRotate(sceneRotate);
 		mrBehavior.setSchedulingBounds(bounds);
@@ -121,6 +158,9 @@ public class VirtualViewer extends JPanel {
 		sceneRotate.addChild(b);
 	}
 
+	/**
+	 * Allows the user to move the view
+	 */
 	public void addMove() {
 		MouseTranslate mtBehavior = new MouseTranslate(sceneRotate);
 		mtBehavior.setSchedulingBounds(bounds);
@@ -131,6 +171,12 @@ public class VirtualViewer extends JPanel {
 		sceneRotate.addChild(b);
 	}
 
+	/**
+	 * Adds an object to the view
+	 * 
+	 * @param b
+	 *            the object to add
+	 */
 	public void addBranchGroup(BranchGroup b) {
 		if (!b.isCompiled()) {
 			b.setCapability(Group.ALLOW_CHILDREN_WRITE);
@@ -143,6 +189,12 @@ public class VirtualViewer extends JPanel {
 		objects.add(b);
 	}
 
+	/**
+	 * Changes the center of the view
+	 * 
+	 * @param p
+	 *            the new center
+	 */
 	public void setCenter(Point3d p) {
 		bounds.setCenter(p);
 		BranchGroup b = new BranchGroup();
@@ -153,22 +205,46 @@ public class VirtualViewer extends JPanel {
 		this.repaint();
 	}
 
+	/**
+	 * Removes an object from the view
+	 * 
+	 * @param b
+	 *            the object to remove
+	 */
 	public void removeBranchGroup(BranchGroup b) {
 		objects.remove(b);
 		sceneRotate.removeChild(b);
 	}
 
+	/**
+	 * Changes the background color of the view
+	 * 
+	 * @param c
+	 *            the color to set
+	 */
 	public void setColor(Color c) {
 		Color3f color = new Color3f(c);
 		backg.setColor(color);
 	}
 
+	/**
+	 * @return the current background color
+	 */
 	public Color getColor() {
 		Color3f c = new Color3f();
 		backg.getColor(c);
 		return c.get();
 	}
 
+	/**
+	 * Gets a screen capture of the current view
+	 * 
+	 * @param width
+	 *            the width of the image
+	 * @param height
+	 *            the height of the image
+	 * @return the image of the view
+	 */
 	public BufferedImage getSnapshot(int width, int height) {
 		Robot r;
 		try {
@@ -186,6 +262,12 @@ public class VirtualViewer extends JPanel {
 		}
 	}
 
+	/**
+	 * Transforms the view through code
+	 * 
+	 * @param trans
+	 *            the set of transformations
+	 */
 	public void transform(Transform3D trans) {
 		sceneRotate.setTransform(trans);
 	}

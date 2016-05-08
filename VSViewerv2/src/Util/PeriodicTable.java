@@ -4,10 +4,20 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * A simple data structure to store a list of all elements, their atomic numer,
+ * and atomic mass.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class PeriodicTable {
 	private static HashMap<String, Double> mass;
 	private static ArrayList<String> elements;
 
+	/**
+	 * Creates the periodic table. It uses a long string to create the tables.
+	 */
 	public static void create() {
 		mass = new HashMap<String, Double>();
 		elements = new ArrayList<String>();
@@ -23,48 +33,88 @@ public class PeriodicTable {
 		}
 	}
 
+	/**
+	 * @return if the table has already been created or not
+	 */
 	public static boolean created() {
 		return mass != null;
 	}
 
+	/**
+	 * Searches the table for the atomic number of an element
+	 * 
+	 * @param element
+	 *            the element to search for
+	 * @return the atomic number for the element
+	 */
 	public static int getAtomicNumber(String element) {
 		return elements.indexOf(element) + 1;
 	}
 
+	/**
+	 * Searches the table for an atomic symbol based on an atomic number
+	 * 
+	 * @param atm
+	 *            the atomic number
+	 * @return the atomic symbol associated with the atomic number
+	 */
 	public static String getElement(int atm) {
 		return elements.get(atm - 1);
 	}
 
+	/**
+	 * Gets the weight of an element
+	 * 
+	 * @param element
+	 *            the atomic symbol to search for
+	 * @return the atomic weight of an element
+	 */
 	public static double getAtomicWeight(String element) {
 		Double d = mass.get(element);
 
 		return d == null ? 0 : d;
 	}
 
+	/**
+	 * Gets the atomic weight of an element
+	 * 
+	 * @param atm
+	 *            the atomic number of the element
+	 * @return the atomic weight of the atom
+	 */
 	public static double getAtomicWeight(int atm) {
 		return getAtomicWeight(getElement(atm));
 	}
 
+	/**
+	 * Gets the color of an atom
+	 * 
+	 * @param type
+	 *            the atomic number
+	 * @param pro
+	 *            whether the atom is part of a protein or not
+	 * @return the color generally associated with the given atom
+	 */
 	public static Color getColor(int type, boolean pro) {
 		switch (type) {
-		case 6:
+		case 6:// Carbon
 			if (pro)
 				return Color.magenta;
 			else
 				return Color.green;
-		case 7:
+		case 7:// Nitrogen
 			return Color.cyan;
-		case 8:
+		case 8:// Oxygen
 			return Color.red;
-		case 9:
+		case 9:// Flourine
 			return Color.green.brighter().brighter().brighter();
-		case 16:
+		case 16:// Sulfur
 			return Color.yellow;
-		case 17:
+		case 17:// Chlorine
 			return Color.green.darker().darker().darker();
-		case 35:
+		case 35:// Bromine
 			return Color.magenta;
-		default:
+		default: // Any other element not mentioned
 			return Color.white;
 		}
 	}

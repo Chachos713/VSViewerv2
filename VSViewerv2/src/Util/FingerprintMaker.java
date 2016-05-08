@@ -7,10 +7,19 @@ import javax.vecmath.Vector3d;
 
 import Molecule.Atom;
 
+/**
+ * Creates the fingerprints for a molecule.
+ * 
+ * @author Kyle Diller
+ *
+ */
 public class FingerprintMaker {
 	private static ArrayList<Vector3d> fpLoc;
 	public static double RADIUS = 1.7, DX = 1.5;
 
+	/**
+	 * Creates the list of loactions for the 3D fingerprint.
+	 */
 	private static void makeLocs() {
 		int move = (int) (Math.round(RADIUS / DX));
 		fpLoc = new ArrayList<Vector3d>();
@@ -26,6 +35,25 @@ public class FingerprintMaker {
 		}
 	}
 
+	/**
+	 * Creates the 3D fingerprint for a molecule
+	 * 
+	 * @param m
+	 *            the molecule
+	 * @param xlo
+	 *            the lower x bound
+	 * @param ylo
+	 *            the lower y bound
+	 * @param zlo
+	 *            the lower z bound
+	 * @param nx
+	 *            number of boxes to divide the width by
+	 * @param ny
+	 *            number of boxes to divide the hegiht by
+	 * @param nz
+	 *            number of boxes to divide the depth by
+	 * @return a list of values for the 3D fingerprint for a molecule
+	 */
 	public static ArrayList<Integer> make3d(Atom[] m, double xlo, double ylo,
 			double zlo, int nx, int ny, int nz) {
 		if (fpLoc == null)
@@ -66,6 +94,12 @@ public class FingerprintMaker {
 		return fp3d;
 	}
 
+	/**
+	 * Removes points that are counted multiple times
+	 * 
+	 * @param fp3d
+	 *            the finger print
+	 */
 	private static void removeDoubles(ArrayList<Integer> fp3d) {
 		ArrayList<Integer> temp = new ArrayList<Integer>();
 		int last = -1;
@@ -81,6 +115,13 @@ public class FingerprintMaker {
 		fp3d = temp;
 	}
 
+	/**
+	 * Creates a structural fingerprint for a molecule
+	 * 
+	 * @param m
+	 *            the molecule. Note this is an Array of Atoms.
+	 * @return the structural fingerprint for the molecule
+	 */
 	public static ArrayList<Integer> make2d(Atom[] m) {
 		final int maxType = 6;
 		ArrayList<Path> paths = getPath(4, m);
@@ -104,6 +145,15 @@ public class FingerprintMaker {
 		return fp2d;
 	}
 
+	/**
+	 * Creates paths of a given length throughout the molecule
+	 * 
+	 * @param length
+	 *            the length of the paths
+	 * @param m
+	 *            the molecule to make the paths with
+	 * @return the paths throughout the molecule of a given length
+	 */
 	private static ArrayList<Path> getPath(int length, Atom[] m) {
 		ArrayList<Path> paths = new ArrayList<Path>();
 
@@ -122,6 +172,15 @@ public class FingerprintMaker {
 		return paths;
 	}
 
+	/**
+	 * Increases the length of the paths by one
+	 * 
+	 * @param paths
+	 *            the paths to increase
+	 * @param m
+	 *            the molecule to increase the paths by
+	 * @return the paths that have increased
+	 */
 	private static ArrayList<Path> grow(ArrayList<Path> paths, Atom[] m) {
 		ArrayList<Path> newPaths = new ArrayList<Path>();
 
@@ -140,6 +199,10 @@ public class FingerprintMaker {
 		return newPaths;
 	}
 
+	/**
+	 * The constructor is private because there is no need to have instances of
+	 * this class
+	 */
 	private FingerprintMaker() {
 	}
 }
