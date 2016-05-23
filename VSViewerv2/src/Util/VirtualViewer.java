@@ -77,7 +77,9 @@ public class VirtualViewer extends JPanel {
 		objects = new ArrayList<BranchGroup>();
 
 		this.setPreferredSize(new Dimension(1000, 1000));
-		Point3d center = new Point3d();
+		
+		//Used for debugging purposes
+		/*Point3d center = new Point3d();
 		double radius = 10;
 		bounds.getCenter(center);
 		Color[] cols = { Color.blue, Color.red, Color.green };
@@ -87,7 +89,7 @@ public class VirtualViewer extends JPanel {
 		cols[0] = Color.cyan;
 		cols[1] = Color.pink;
 		cols[2] = Color.orange;
-		addAxis(center, radius, cols);
+		addAxis(center, radius, cols);*/
 	}
 
 	/**

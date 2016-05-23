@@ -9,6 +9,7 @@ import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.vecmath.Color3f;
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
 import Util.PeriodicTable;
@@ -23,6 +24,8 @@ import com.sun.j3d.utils.geometry.Cylinder;
  *
  */
 public class Bond extends TransformGroup {
+	public static Point3d atomOffset;
+
 	private Atom a1, a2;
 	private int type; // Needs to be stored but might not be used
 
@@ -75,15 +78,15 @@ public class Bond extends TransformGroup {
 		Vector3f v2 = new Vector3f();
 
 		ColoringAttributes ca1 = getAtomColor(a1, pro);
-		v1.x = (float) a1.x3d;
-		v1.y = (float) a1.y3d;
-		v1.z = (float) a1.z3d;
+		v1.x = (float) (a1.x3d - atomOffset.x);
+		v1.y = (float) (a1.y3d - atomOffset.y);
+		v1.z = (float) (a1.z3d - atomOffset.z);
 		v1 = convertCoord(v1);
 
 		ColoringAttributes ca2 = getAtomColor(a2, pro);
-		v2.x = (float) a2.x3d;
-		v2.y = (float) a2.y3d;
-		v2.z = (float) a2.z3d;
+		v2.x = (float) (a2.x3d - atomOffset.x);
+		v2.y = (float) (a2.y3d - atomOffset.y);
+		v2.z = (float) (a2.z3d - atomOffset.z);
 		v2 = convertCoord(v2);
 
 		if (color != null) {

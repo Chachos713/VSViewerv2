@@ -19,8 +19,10 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.vecmath.Point2d;
+import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import Molecule.Bond;
 import Molecule.Molecule;
 import Panels.SplitPanel;
 
@@ -95,6 +97,11 @@ public class Database extends Observable {
 			Node<Molecule> last = header;
 			Molecule temp;
 			Node<Molecule> tempNode;
+
+			Bond.atomOffset = new Point3d(
+					(float) ((limits[2] + limits[3]) / 2),
+					(float) ((limits[4] + limits[5]) / 2),
+					(float) ((limits[6] + limits[7]) / 2));
 
 			while (sc.hasNextLine()) {
 				temp = Molecule.readMoleculeVSV(sc, limits[0], limits[1],
