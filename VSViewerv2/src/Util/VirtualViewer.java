@@ -15,18 +15,23 @@ import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.Group;
+import javax.media.j3d.LineArray;
 import javax.media.j3d.PointLight;
+import javax.media.j3d.Shape3D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.swing.JPanel;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3d;
 
 import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
 import com.sun.j3d.utils.behaviors.mouse.MouseWheelZoom;
+import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
+import com.sun.j3d.utils.behaviors.vp.ViewPlatformBehavior;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 /**
@@ -55,15 +60,97 @@ public class VirtualViewer extends JPanel {
 		GraphicsConfiguration config = SimpleUniverse
 				.getPreferredConfiguration();
 		Canvas3D canvas3D = new Canvas3D(config);
-		add("Center", canvas3D);
+		this.add(BorderLayout.CENTER, canvas3D);
 		SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
 		simpleU.getViewingPlatform().setNominalViewingTransform();
+
+		Vector3d v3d = new Vector3d(middle);
+		v3d.z = 2 * v3d.z;
+		Transform3D move = new Transform3D();
+		move.setTranslation(v3d);
+		ViewPlatformBehavior centerer = new OrbitBehavior();
+		centerer.setHomeTransform(move);
+		simpleU.getViewingPlatform().setViewPlatformBehavior(centerer);
 
 		simpleU.addBranchGraph(setUpScene(middle));
 
 		objects = new ArrayList<BranchGroup>();
 
 		this.setPreferredSize(new Dimension(1000, 1000));
+		Point3d center = new Point3d();
+		double radius = 10;
+		bounds.getCenter(center);
+		Color[] cols = { Color.blue, Color.red, Color.green };
+		addAxis(center, radius, cols);
+
+		center = new Point3d();
+		cols[0] = Color.cyan;
+		cols[1] = Color.pink;
+		cols[2] = Color.orange;
+		addAxis(center, radius, cols);
+	}
+
+	/**
+	 * Adds 3 lines to represent the x, y, and z axis that help with debug
+	 * purpose
+	 * 
+	 * @param center
+	 *            the intersection of the 3 axis
+	 * @param radius
+	 *            the length of each axis
+	 * @param col
+	 *            the colors of the axis
+	 */
+	private void addAxis(Point3d center, double radius, Color[] col) {
+		System.out.println(center);
+
+		Point3f xMin = new Point3f((float) (center.x - radius),
+				(float) center.y, (float) center.z);
+		Point3f xMax = new Point3f((float) (center.x + radius),
+				(float) center.y, (float) center.z);
+		Color3f xColor = new Color3f(col[0]);
+
+		Point3f yMin = new Point3f((float) center.x,
+				(float) (center.y - radius), (float) center.z);
+		Point3f yMax = new Point3f((float) center.x,
+				(float) (center.y + radius), (float) center.z);
+		Color3f yColor = new Color3f(col[1]);
+
+		Point3f zMin = new Point3f((float) center.x, (float) center.y,
+				(float) (center.z - radius));
+		Point3f zMax = new Point3f((float) center.x, (float) center.y,
+				(float) (center.z + radius));
+		Color3f zColor = new Color3f(col[2]);
+
+		LineArray xAxis = new LineArray(2, LineArray.COORDINATES
+				| LineArray.COLOR_3);
+		xAxis.setCoordinate(0, xMin);
+		xAxis.setCoordinate(1, xMax);
+		xAxis.setColor(0, xColor);
+		xAxis.setColor(1, xColor);
+
+		LineArray yAxis = new LineArray(2, LineArray.COORDINATES
+				| LineArray.COLOR_3);
+		yAxis.setCoordinate(0, yMin);
+		yAxis.setCoordinate(1, yMax);
+		yAxis.setColor(0, yColor);
+		yAxis.setColor(1, yColor);
+
+		LineArray zAxis = new LineArray(2, LineArray.COORDINATES
+				| LineArray.COLOR_3);
+		zAxis.setCoordinate(0, zMin);
+		zAxis.setCoordinate(1, zMax);
+		zAxis.setColor(0, zColor);
+		zAxis.setColor(1, zColor);
+
+		Shape3D shape = new Shape3D();
+		shape.addGeometry(xAxis);
+		shape.addGeometry(yAxis);
+		shape.addGeometry(zAxis);
+
+		BranchGroup axis = new BranchGroup();
+		axis.addChild(shape);
+		addBranchGroup(axis);
 	}
 
 	/**
