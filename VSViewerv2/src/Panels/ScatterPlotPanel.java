@@ -26,6 +26,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -70,6 +72,8 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 
 	private boolean drawLSRL;
 	private double rBound;
+
+	private JMenu xMenu, yMenu;
 
 	/**
 	 * Creates the panel for the scatter plot to be drawn on.
@@ -139,6 +143,76 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		molSide.setLocation(820, 0);
 		molSide.pack();
 		molSide.setVisible(data.getMolecule(0).getDimension() >= 2);
+
+		xMenu = new JMenu("X Axis");
+		yMenu = new JMenu("Y Axis");
+		createMenus((ActionListener) owner);
+	}
+
+	/**
+	 * Creates the menus for easy to change x and y axis
+	 * 
+	 * @param act
+	 *            the action listener for when a menu item is clicked
+	 */
+	private void createMenus(ActionListener act) {
+		xMenu.removeAll();
+		yMenu.removeAll();
+
+		JMenuItem xTemp, yTemp;
+
+		for (int i = 0; i < labels.size(); i++) {
+			xTemp = new JMenuItem(labels.get(i).getLabel());
+			xTemp.addActionListener(act);
+			xTemp.setActionCommand("mx" + i);
+			xMenu.add(xTemp);
+
+			yTemp = new JMenuItem(labels.get(i).getLabel());
+			yTemp.addActionListener(act);
+			yTemp.setActionCommand("my" + i);
+			yMenu.add(yTemp);
+		}
+	}
+
+	/**
+	 * @return the x axis menu
+	 */
+	public JMenu getXMenu() {
+		return xMenu;
+	}
+
+	/**
+	 * @return the y axis menu
+	 */
+	public JMenu getYMenu() {
+		return yMenu;
+	}
+
+	/**
+	 * Changes the axis label for the specific axis based on which menu item was
+	 * clicked
+	 * 
+	 * @param command
+	 *            the action command from the menu item that was clicked
+	 */
+	public void menuChange(String command) {
+		int i = 0;
+		try {
+			i = Integer.parseInt(command.substring(2));
+		} catch (Exception e) {
+			return;
+		}
+
+		switch (command.charAt(1)) {
+		case 'x':
+			xaxis = i;
+			break;
+		case 'y':
+			yaxis = i;
+			break;
+		}
+
+		this.repaint();
 	}
 
 	/**
@@ -593,6 +667,9 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 	@Override
 	public void update(Observable o, Object arg) {
 		labels = data.getLabel();
+
+		this.createMenus(xMenu.getItem(0).getActionListeners()[0]);
+
 		this.repaint();
 	}
 

@@ -53,9 +53,9 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 		mgv = m;
 		tdv = t;
 
-		JMenuBar menu = createMenuBar();
-
 		spp = new ScatterPlotPanel(d, this);
+
+		JMenuBar menu = createMenuBar();
 
 		frame = new JFrame("Scatter Plot View");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -170,6 +170,8 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 
 		menu.add(file);
 		menu.add(tools);
+		menu.add(spp.getXMenu());
+		menu.add(spp.getYMenu());
 
 		return menu;
 	}
@@ -231,6 +233,8 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 			break;
 		case 'T':
 			spp.toolChoices(e.getActionCommand().substring(1));
+		case 'm':
+			spp.menuChange(e.getActionCommand());
 		}
 	}
 

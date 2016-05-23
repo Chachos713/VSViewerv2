@@ -117,6 +117,8 @@ public class ScatterPlotTest implements MouseMotionListener, MouseListener,
 		tools.add(popup);
 
 		menu.add(tools);
+		menu.add(sp.getXMenu());
+		menu.add(sp.getYMenu());
 
 		return menu;
 	}
@@ -152,7 +154,10 @@ public class ScatterPlotTest implements MouseMotionListener, MouseListener,
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		sp.toolChoices(e.getActionCommand().substring(1));
+		if (e.getActionCommand().charAt(0) == 'T')
+			sp.toolChoices(e.getActionCommand().substring(1));
+		else
+			sp.menuChange(e.getActionCommand());
 	}
 
 	@Override
