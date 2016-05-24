@@ -46,6 +46,8 @@ public class Database extends Observable {
 	 *             if the file is unreadable
 	 */
 	public static Database read(String file) throws Exception {
+		Bond.atomOffset = new Point3d();
+		
 		if (file.endsWith(".vsv"))
 			return readVSV(file);
 		else if (file.endsWith(".sdf"))
