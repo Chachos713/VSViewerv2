@@ -43,6 +43,8 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
  */
 @SuppressWarnings("serial")
 public class VirtualViewer extends JPanel {
+	private static final boolean DEBUG = false;
+
 	private ArrayList<BranchGroup> objects;
 
 	private TransformGroup sceneRotate;
@@ -77,19 +79,21 @@ public class VirtualViewer extends JPanel {
 		objects = new ArrayList<BranchGroup>();
 
 		this.setPreferredSize(new Dimension(1000, 1000));
-		
-		//Used for debugging purposes
-		/*Point3d center = new Point3d();
-		double radius = 10;
-		bounds.getCenter(center);
-		Color[] cols = { Color.blue, Color.red, Color.green };
-		addAxis(center, radius, cols);
 
-		center = new Point3d();
-		cols[0] = Color.cyan;
-		cols[1] = Color.pink;
-		cols[2] = Color.orange;
-		addAxis(center, radius, cols);*/
+		// Used for debugging purposes
+		if (DEBUG) {
+			Point3d center = new Point3d();
+			double radius = 10;
+			bounds.getCenter(center);
+			Color[] cols = { Color.blue, Color.red, Color.green };
+			addAxis(center, radius, cols);
+
+			center = new Point3d();
+			cols[0] = Color.cyan;
+			cols[1] = Color.pink;
+			cols[2] = Color.orange;
+			addAxis(center, radius, cols);
+		}
 	}
 
 	/**
