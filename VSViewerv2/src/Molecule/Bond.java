@@ -70,6 +70,14 @@ public class Bond extends TransformGroup {
 		this(other.a1, other.a2, other.type, is3D, null, false);
 	}
 
+	/**
+	 * Creates the cylinders to display the bond
+	 * 
+	 * @param color
+	 *            the color if it is a protein
+	 * @param pro
+	 *            whether the bond is part of a protein or not
+	 */
 	private void createBond(float[] color, boolean pro) {
 		if (!a1.isPolarH() || !a2.isPolarH())
 			return;
