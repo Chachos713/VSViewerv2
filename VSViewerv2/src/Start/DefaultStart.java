@@ -1,8 +1,10 @@
 package Start;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 import Util.Database;
+import Util.Filter;
 import Util.KFileChooser;
 import Views.CommentView;
 import Views.MolGridView;
@@ -56,7 +58,10 @@ public class DefaultStart {
 	private String openToStart() {
 		KFileChooser kfc = KFileChooser.create();
 
-		int choice = kfc.open(null, 0);
+		String[] v = { ".vsv" };
+		FileFilter[] vsv = { new Filter(v) };
+
+		int choice = kfc.open(null, vsv);
 
 		if (choice != JFileChooser.APPROVE_OPTION)
 			System.exit(0);

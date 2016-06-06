@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Creates a file chooser for the user to select files with. Uses the singleton
@@ -31,7 +32,6 @@ public class KFileChooser {
 	}
 
 	private JFileChooser jfc;
-	private Filter pdb, vsv, png, sdf;
 
 	/**
 	 * Creates the file chooser. The constructor is private to keep in line with
@@ -39,66 +39,60 @@ public class KFileChooser {
 	 */
 	private KFileChooser() {
 		jfc = new JFileChooser();
-
-		String[] ext = { ".vsv" };
-		String[] ext2 = { ".pdb" };
-		String[] ext3 = { ".png" };
-		String[] ext4 = { ".sdf" };
-		vsv = new Filter(ext);
-		pdb = new Filter(ext2);
-		png = new Filter(ext3);
-		sdf = new Filter(ext4);
 		jfc.setAcceptAllFileFilterUsed(false);
 	}
 
 	/**
-	 * Displays an open dialog for the user to select a file.
+	 * Opens an open dialog
 	 * 
 	 * @param c
-	 *            the component to center the file chooser around
-	 * @param type
-	 *            whether the user is selecting a pdb file or a vsv file
-	 * @return whether the user selected ok or cancel
+	 *            the compoenent to center around
+	 * @param filters
+	 *            the filters to filter the files by
+	 * @return the return value of the file chooser
 	 */
-	public int open(Component c, int type) {
-		if (type == 1) {
-			jfc.addChoosableFileFilter(pdb);
-			jfc.removeChoosableFileFilter(vsv);
-		} else if (type == 0) {
-			jfc.removeChoosableFileFilter(pdb);
-			jfc.addChoosableFileFilter(vsv);
-		}
-		jfc.removeChoosableFileFilter(png);
-		jfc.removeChoosableFileFilter(sdf);
-
+	public int open(Component c, FileFilter[] filters) {
+		removeFilters();
+		addFilters(filters);
 		return jfc.showOpenDialog(c);
 	}
 
 	/**
-	 * Displays a save dialog for the user
+	 * Opens the save dialog
 	 * 
 	 * @param c
-	 *            the component to center the file chooser around
-	 * @param type
-	 *            whether the file being saved is a vsv or a png file
-	 * @return whether the user selected ok or cancel on the file chooser
+	 *            the component to center around
+	 * @param filters
+	 *            the filters to open with
+	 * @return the return value of the file chooser
 	 */
-	public int save(Component c, int type) {
-		jfc.removeChoosableFileFilter(pdb);
-		jfc.removeChoosableFileFilter(vsv);
-		jfc.removeChoosableFileFilter(png);
-
-		if (type == 0 || type == 1) {
-			jfc.addChoosableFileFilter(vsv);
-		} else if (type == 2) {
-			jfc.addChoosableFileFilter(png);
-		}
-
-		if (type == 1) {
-			jfc.addChoosableFileFilter(sdf);
-		}
-
+	public int save(Component c, FileFilter[] filters) {
+		removeFilters();
+		addFilters(filters);
 		return jfc.showSaveDialog(c);
+	}
+
+	/**
+	 * Adds file filters to the file chooser
+	 * 
+	 * @param filters
+	 *            the filters to add to the file chooser
+	 */
+	private void addFilters(FileFilter[] filters) {
+		for (FileFilter f : filters) {
+			jfc.addChoosableFileFilter(f);
+		}
+	}
+
+	/**
+	 * Removes all the file filters from the file chooser.
+	 */
+	private void removeFilters() {
+		FileFilter[] filters = jfc.getChoosableFileFilters();
+
+		for (FileFilter f : filters) {
+			jfc.removeChoosableFileFilter(f);
+		}
 	}
 
 	/**

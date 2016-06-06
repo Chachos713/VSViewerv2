@@ -33,12 +33,14 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 import javax.vecmath.Point2d;
 
 import Start.DefaultStart;
 import Util.Calculator;
 import Util.DataLabel;
 import Util.Database;
+import Util.Filter;
 import Util.KFileChooser;
 
 /**
@@ -689,6 +691,10 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 	 */
 	public boolean fileChoices(char c) {
 		KFileChooser kfc = KFileChooser.create();
+
+		String[] v = { ".vsv" };
+		FileFilter[] vsv = { new Filter(v) };
+
 		int choice;
 		switch (c) {
 		case 'C':
@@ -700,7 +706,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 			if (!data.close())
 				break;
 
-			choice = kfc.open(this, 0);
+			choice = kfc.open(this, vsv);
 
 			if (choice != JFileChooser.APPROVE_OPTION)
 				break;
@@ -720,7 +726,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 			break;
 		case 'A':
 			try {
-				choice = kfc.save(this, 0);
+				choice = kfc.save(this, vsv);
 
 				if (choice != JFileChooser.APPROVE_OPTION)
 					break;

@@ -18,6 +18,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.filechooser.FileFilter;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -47,7 +48,7 @@ public class Database extends Observable {
 	 */
 	public static Database read(String file) throws Exception {
 		Bond.atomOffset = new Point3d();
-		
+
 		if (file.endsWith(".vsv"))
 			return readVSV(file);
 		else if (file.endsWith(".sdf"))
@@ -589,7 +590,10 @@ public class Database extends Observable {
 	 */
 	public void save(ArrayList<Integer> display) throws Exception {
 		KFileChooser kfc = KFileChooser.create();
-		int choice = kfc.save(null, 1);
+
+		String[] v = { ".vsv", ".sdf" };
+		FileFilter[] vsv = { new Filter(v) };
+		int choice = kfc.save(null, vsv);
 
 		if (choice != JFileChooser.APPROVE_OPTION)
 			return;

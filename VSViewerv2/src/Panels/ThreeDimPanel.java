@@ -17,10 +17,12 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.filechooser.FileFilter;
 import javax.vecmath.Point3d;
 
 import Protein.Protein;
 import Util.Database;
+import Util.Filter;
 import Util.KFileChooser;
 import Util.VirtualViewer;
 import Views.ThreeDimView;
@@ -196,6 +198,12 @@ public class ThreeDimPanel extends JPanel implements Observer {
 		Object source = arg0.getSource();
 		KFileChooser k = KFileChooser.create();
 
+		String[] p = { ".png" };
+		FileFilter[] png = { new Filter(p) };
+
+		String[] d = { ".pdb" };
+		FileFilter[] pdb = { new Filter(d) };
+
 		if (source instanceof JCheckBox)
 			findChangedBox(source);
 		else if (source instanceof JButton)
@@ -203,7 +211,7 @@ public class ThreeDimPanel extends JPanel implements Observer {
 		else
 			switch (arg0.getActionCommand().charAt(0)) {
 			case 'S':
-				if (k.save(this, 2) == JFileChooser.APPROVE_OPTION) {
+				if (k.save(this, png) == JFileChooser.APPROVE_OPTION) {
 					BufferedImage i = (BufferedImage) vv.getSnapshot(
 							vv.getWidth(), vv.getHeight());
 
@@ -216,13 +224,13 @@ public class ThreeDimPanel extends JPanel implements Observer {
 				}
 				break;
 			case 'O':
-				if (k.open(this, 1) != JFileChooser.APPROVE_OPTION) {
+				if (k.open(this, pdb) != JFileChooser.APPROVE_OPTION) {
 					break;
 				}
 
 				try {
-					Protein p = Protein.read(k.getFile().toString());
-					vv.addBranchGroup(p);
+					Protein pro = Protein.read(k.getFile().toString());
+					vv.addBranchGroup(pro);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
