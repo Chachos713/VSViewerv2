@@ -24,6 +24,7 @@ import Protein.Protein;
 import Util.Database;
 import Util.Filter;
 import Util.KFileChooser;
+import Util.MolPanel;
 import Util.VirtualViewer;
 import Views.ThreeDimView;
 
@@ -38,11 +39,7 @@ import Views.ThreeDimView;
 public class ThreeDimPanel extends JPanel implements Observer {
 	private VirtualViewer vv;
 	private Database data;
-	private boolean deletable;
 
-	private JCheckBox[] display;
-	private JButton[] remove;
-	private boolean[] displayed;
 	private JPanel[] mol;
 
 	/**
@@ -63,7 +60,7 @@ public class ThreeDimPanel extends JPanel implements Observer {
 		this.setPreferredSize(new Dimension(900, 700));
 		data = d;
 		data.addObserver(this);
-		deletable = delete;
+		MolPanel.deletable = delete;
 
 		Point3d middle = new Point3d(data.getMiddle());
 
@@ -74,26 +71,12 @@ public class ThreeDimPanel extends JPanel implements Observer {
 
 		this.add(BorderLayout.CENTER, vv);
 
-		display = new JCheckBox[data.getNumMols()];
-		displayed = new boolean[data.getNumMols()];
-		remove = new JButton[data.getNumMols()];
 		mol = new JPanel[data.getNumMols()];
 
 		Box checkboxes = Box.createVerticalBox();
 
-		for (int i = 0; i < display.length; i++) {
-			mol[i] = new JPanel();
-
-			display[i] = new JCheckBox(data.getMolecule(i).getName());
-			display[i].addActionListener(a);
-
-			remove[i] = new JButton("X");
-			remove[i].addActionListener(a);
-
-			displayed[i] = readAll;
-			mol[i].add(display[i]);
-			mol[i].add(remove[i]);
-			remove[i].setVisible(deletable);
+		for (int i = 0; i < mol.length; i++) {
+			mol[i] = new MolPanel(data.getMolecule(i).getName(), a);
 			mol[i].setVisible(readAll);
 
 			checkboxes.add(mol[i]);
@@ -117,11 +100,11 @@ public class ThreeDimPanel extends JPanel implements Observer {
 		if (mol < 0)
 			return;
 
-		if (!display[mol].isSelected())
+		if (!((MolPanel) this.mol[mol]).isSelected())
 			vv.addBranchGroup(data.getMolecule(mol));
-		displayed[mol] = true;
-		this.mol[mol].setVisible(true);
-		display[mol].setSelected(true);
+
+		((MolPanel) this.mol[mol]).setVisible(true);
+		((MolPanel) this.mol[mol]).setSelected(true);
 	}
 
 	/**
@@ -140,12 +123,11 @@ public class ThreeDimPanel extends JPanel implements Observer {
 	 *            the index of the molecule to remove.
 	 */
 	public void removeMolecule(int i) {
-		displayed[i] = false;
 		mol[i].setVisible(false);
 
-		if (display[i].isSelected())
+		if (((MolPanel) mol[i]).isSelected())
 			vv.removeBranchGroup(data.getMolecule(i));
-		display[i].setSelected(false);
+		((MolPanel) mol[i]).setSelected(false);
 	}
 
 	/**
@@ -158,15 +140,15 @@ public class ThreeDimPanel extends JPanel implements Observer {
 	public void findChangedBox(Object source) {
 		int i = 0;
 
-		for (i = 0; i < display.length; i++) {
-			if (display[i] == source)
+		for (i = 0; i < mol.length; i++) {
+			if (((MolPanel) mol[i]).isCheck(source))
 				break;
 		}
 
-		if (i == display.length)
+		if (i == mol.length)
 			return;
 
-		if (display[i].isSelected()) {
+		if (((MolPanel) mol[i]).isSelected()) {
 			vv.addBranchGroup(data.getMolecule(i));
 		} else {
 			vv.removeBranchGroup(data.getMolecule(i));
@@ -183,15 +165,15 @@ public class ThreeDimPanel extends JPanel implements Observer {
 	public void findButton(Object source) {
 		int i = 0;
 
-		for (i = 0; i < remove.length; i++) {
-			if (remove[i] == source)
+		for (i = 0; i < mol.length; i++) {
+			if (((MolPanel) mol[i]).isRemove(source))
 				break;
 		}
 
-		if (i == remove.length)
+		if (i == mol.length)
 			return;
 
-		remove(i);
+		removeMolecule(i);
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
@@ -241,6 +223,7 @@ public class ThreeDimPanel extends JPanel implements Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		((ThreeDimView) display[0].getActionListeners()[0]).show(true);
+		((ThreeDimView) ((MolPanel) mol[0]).getButton().getActionListeners()[0])
+				.show(true);
 	}
 }
