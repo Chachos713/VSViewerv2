@@ -86,6 +86,12 @@ public class Bond {
 		return a1.isPolarH() || a2.isPolarH();
 	}
 
+	/**
+	 * Adds this bond to the open astex molecule.
+	 * 
+	 * @param asMol
+	 *            the astex molecule to add this bond to.
+	 */
 	public void addToAsMol(astex.Molecule asMol) {
 		astex.Atom temp1 = asMol.addAtom();
 		astex.Atom temp2 = asMol.addAtom();

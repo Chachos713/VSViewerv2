@@ -923,6 +923,9 @@ public class Molecule {
 				/ (double) (mol1.size() + mol2.size() - numEqu);
 	}
 
+	/**
+	 * @return the astex molecule with associated with this molecule.
+	 */
 	public astex.Molecule getAstex() {
 		return asMol;
 	}
