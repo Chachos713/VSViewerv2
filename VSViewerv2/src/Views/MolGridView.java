@@ -23,6 +23,7 @@ import Util.Database;
 public class MolGridView implements MouseListener, ActionListener {
 	private MolGridPanel mgp;
 	private ThreeDimView tdv;
+	private AstexView av;
 	private CommentView cv;
 	private JFrame frame;
 	private int dim;
@@ -35,10 +36,11 @@ public class MolGridView implements MouseListener, ActionListener {
 	 *            The database of molecules.
 	 * @param t
 	 *            The 3D view.
+	 * @param av 
 	 * @param c
 	 *            The Comment view.
 	 */
-	public MolGridView(Database d, ThreeDimView t, CommentView c) {
+	public MolGridView(Database d, ThreeDimView t, AstexView a, CommentView c) {
 		dim = d.getMolecule(0).getDimension();
 
 		if (dim < 2)
@@ -46,6 +48,7 @@ public class MolGridView implements MouseListener, ActionListener {
 
 		cv = c;
 		tdv = t;
+		av = a;
 		mgp = new MolGridPanel(this, d, new ArrayList<Integer>());
 
 		frame = new JFrame("Molecule Grid View");
@@ -90,6 +93,7 @@ public class MolGridView implements MouseListener, ActionListener {
 	public void mouseClicked(MouseEvent e) {
 		int m = mgp.molSelected(e.getX(), e.getY());
 		tdv.addMol(m);
+		av.addMol(m);
 		cv.setMolecule(m, false);
 	}
 

@@ -6,6 +6,7 @@ import javax.swing.filechooser.FileFilter;
 import Util.Database;
 import Util.Filter;
 import Util.KFileChooser;
+import Views.AstexView;
 import Views.CommentView;
 import Views.MolGridView;
 import Views.ScatterPlotView;
@@ -40,9 +41,10 @@ public class DefaultStart {
 
 		ThreeDimView tdv = new ThreeDimView(d);
 		CommentView cv = new CommentView(d);
-		MolGridView mgv = new MolGridView(d, tdv, cv);
+		AstexView av = new AstexView(d);
+		MolGridView mgv = new MolGridView(d, tdv, av, cv);
 
-		ScatterPlotView spv = new ScatterPlotView(d, cv, mgv, tdv);
+		ScatterPlotView spv = new ScatterPlotView(d, cv, mgv, tdv, av);
 
 		// Starts the program with the scatter plot view.
 		spv.run();
