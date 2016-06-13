@@ -34,7 +34,6 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
-import javax.vecmath.Point2d;
 
 import Start.DefaultStart;
 import Util.Calculator;
@@ -42,6 +41,7 @@ import Util.DataLabel;
 import Util.Database;
 import Util.Filter;
 import Util.KFileChooser;
+import Util.Point2d;
 
 /**
  * A simple form for displaying the scatter plot

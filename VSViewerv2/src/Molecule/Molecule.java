@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
 
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.TransformGroup;
-
 import Util.DataLabel;
 import Util.EndFileException;
 import Util.FingerprintMaker;
@@ -26,7 +23,7 @@ import Util.PeriodicTable;
  * @author Kyle Diller
  *
  */
-public class Molecule extends BranchGroup {
+public class Molecule {
 	private static final String D2C = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~@#$%^&*()_+-=[]{};:,<.>?/|";
 	private static final int D2C_MAX = 90;
 
@@ -340,7 +337,6 @@ public class Molecule extends BranchGroup {
 
 		asMol = new astex.Molecule();
 		asMol.setName(name);
-		TransformGroup objTg = new TransformGroup();
 
 		for (int i = 0; i < atms.length; i++) {
 			atms[i] = new Atom(a[i]);
@@ -348,7 +344,6 @@ public class Molecule extends BranchGroup {
 
 		for (int i = 0; i < bnds.length; i++) {
 			bnds[i] = new Bond(b[i], !d3.isEmpty());
-			objTg.addChild(bnds[i]);
 			bnds[i].addToAsMol(asMol);
 		}
 
@@ -370,8 +365,6 @@ public class Molecule extends BranchGroup {
 		for (int i : fp2) {
 			fp2d.add(i);
 		}
-
-		this.addChild(objTg);
 	}
 
 	/**

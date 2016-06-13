@@ -1,7 +1,5 @@
 package Util;
 
-import javax.vecmath.Point2d;
-
 /**
  * A class that handles a lot of the math calculations.
  * 

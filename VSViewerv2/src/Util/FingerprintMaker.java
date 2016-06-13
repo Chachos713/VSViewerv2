@@ -3,8 +3,6 @@ package Util;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import javax.vecmath.Vector3d;
-
 import Molecule.Atom;
 
 /**
