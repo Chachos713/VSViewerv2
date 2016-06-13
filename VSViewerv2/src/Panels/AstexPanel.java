@@ -15,16 +15,20 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileFilter;
 
+import Molecule.Molecule;
 import Util.Database;
 import Util.Filter;
 import Util.KFileChooser;
 import Util.MolPanel;
+import Util.MolViewer;
 import Views.AstexView;
-import astex.MoleculeViewer;
+import astex.DynamicArray;
+import astex.MoleculeRenderer;
 
 @SuppressWarnings("serial")
 public class AstexPanel extends JPanel implements Observer {
-	private MoleculeViewer mv;
+	private MolViewer mv;
+	private MoleculeRenderer mr;
 	private Database data;
 
 	private MolPanel[] mols;
@@ -38,7 +42,8 @@ public class AstexPanel extends JPanel implements Observer {
 		data = d;
 		data.addObserver(this);
 
-		mv = new MoleculeViewer();
+		mv = new MolViewer();
+		mr = mv.moleculeRenderer;
 
 		this.add(BorderLayout.CENTER, mv);
 
@@ -70,8 +75,7 @@ public class AstexPanel extends JPanel implements Observer {
 			return;
 
 		if (!mols[mol].isSelected()) {
-			// TODO
-			// mv.addMolecule(data.getMolecule(mol).getAstex());
+			addMolecule(data.getMolecule(mol));
 		}
 
 		mols[mol].setVisible(true);
@@ -80,11 +84,26 @@ public class AstexPanel extends JPanel implements Observer {
 
 	public void removeMolecule(int i) {
 		if (mols[i].isSelected()) {
-			// TODO Remove molecule
+			removeMolecule(data.getMolecule(i));
 		}
 
 		mols[i].setVisible(false);
 		mols[i].setSelected(false);
+	}
+
+	private void addMolecule(Molecule mol) {
+		mv.addMolecule(mol.getAstex());
+
+		mr.execute("select molexact '" + mol.getName() + "';");
+		mr.execute("display cylinders on current;");
+		mr.execute("display lines off current;");
+		mr.execute("ball_radius 0 current;");
+		mr.execute("exclude molexact '" + mol.getName() + "';");
+	}
+
+	private void removeMolecule(Molecule mol) {
+		DynamicArray da = mv.moleculeRenderer.getMolecules();
+		da.remove(mol.getAstex());
 	}
 
 	private void findChangedBox(Object source) {
@@ -99,9 +118,9 @@ public class AstexPanel extends JPanel implements Observer {
 			return;
 
 		if (mols[i].isSelected()) {
-			// TODO Add molecule
+			addMolecule(data.getMolecule(i));
 		} else {
-			// TODO Remove Molecule
+			removeMolecule(data.getMolecule(i));
 		}
 	}
 
@@ -146,6 +165,6 @@ public class AstexPanel extends JPanel implements Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		((AstexView)mols[0].getButton().getActionListeners()[0]).show(true);
+		((AstexView) mols[0].getButton().getActionListeners()[0]).show(true);
 	}
 }

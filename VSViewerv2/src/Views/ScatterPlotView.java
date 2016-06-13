@@ -30,7 +30,6 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 	private ScatterPlotPanel spp;
 	private CommentView cv;
 	private MolGridView mgv;
-	private ThreeDimView tdv;
 	private AstexView av;
 	private JFrame frame;
 
@@ -47,12 +46,10 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 	 * @param t
 	 *            The 3D view.
 	 */
-	public ScatterPlotView(Database d, CommentView c, MolGridView m,
-			ThreeDimView t, AstexView a) {
+	public ScatterPlotView(Database d, CommentView c, MolGridView m, AstexView a) {
 
 		cv = c;
 		mgv = m;
-		tdv = t;
 		av = a;
 
 		spp = new ScatterPlotPanel(d, this);
@@ -199,7 +196,6 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 	public void mouseClicked(MouseEvent e) {
 		if (spp.mouseClicked(e)) {
 			int m = spp.getSelected();
-			tdv.addMol(m);
 			av.addMol(m);
 			cv.setMolecule(m, false);
 		}
@@ -230,7 +226,6 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 			if (spp.fileChoices(e.getActionCommand().charAt(1))) {
 				cv.close();
 				mgv.close();
-				tdv.close();
 				av.close();
 				frame.dispose();
 			}
@@ -247,7 +242,6 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 		if (spp.fileChoices('C')) {
 			cv.close();
 			mgv.close();
-			tdv.close();
 			av.close();
 			frame.dispose();
 			System.exit(0);

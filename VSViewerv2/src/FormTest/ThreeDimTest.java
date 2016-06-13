@@ -8,7 +8,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import Panels.ThreeDimPanel;
+import Panels.AstexPanel;
 import Util.Database;
 
 /**
@@ -29,12 +29,13 @@ public class ThreeDimTest implements ActionListener {
 	}
 
 	private JFrame frame;
-	private ThreeDimPanel tdp;
+	private AstexPanel tdp;
 
 	/**
 	 * Creates the form for the user to see.
 	 * 
-	 * @param file The file to read.
+	 * @param file
+	 *            The file to read.
 	 */
 	public ThreeDimTest(String file) {
 		Database data;
@@ -48,7 +49,7 @@ public class ThreeDimTest implements ActionListener {
 		frame = new JFrame("3D Test");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		tdp = new ThreeDimPanel(data, this, true, false);
+		tdp = new AstexPanel(data, this, true, false);
 
 		frame.add(tdp);
 		frame.setJMenuBar(createMenu());

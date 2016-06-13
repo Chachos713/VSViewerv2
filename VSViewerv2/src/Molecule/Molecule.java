@@ -295,6 +295,7 @@ public class Molecule extends BranchGroup {
 	private Bond[] bnds;
 	private ArrayList<Comment> comments;
 	private ArrayList<DataPt> dataPts;
+	private astex.Molecule asMol;
 
 	private ArrayList<Integer> fp3d, fp2d;
 
@@ -337,6 +338,8 @@ public class Molecule extends BranchGroup {
 		comments = new ArrayList<Comment>(c.size());
 		dataPts = new ArrayList<DataPt>(d.size());
 
+		asMol = new astex.Molecule();
+		asMol.setName(name);
 		TransformGroup objTg = new TransformGroup();
 
 		for (int i = 0; i < atms.length; i++) {
@@ -346,6 +349,7 @@ public class Molecule extends BranchGroup {
 		for (int i = 0; i < bnds.length; i++) {
 			bnds[i] = new Bond(b[i], !d3.isEmpty());
 			objTg.addChild(bnds[i]);
+			bnds[i].addToAsMol(asMol);
 		}
 
 		for (int i = 0; i < c.size(); i++) {
@@ -924,5 +928,9 @@ public class Molecule extends BranchGroup {
 
 		return (double) (numEqu)
 				/ (double) (mol1.size() + mol2.size() - numEqu);
+	}
+
+	public astex.Molecule getAstex() {
+		return asMol;
 	}
 }

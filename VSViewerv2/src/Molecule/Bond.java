@@ -13,6 +13,7 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3f;
 
 import Util.PeriodicTable;
+import astex.Color32;
 
 import com.sun.j3d.utils.geometry.Cylinder;
 
@@ -262,5 +263,30 @@ public class Bond extends TransformGroup {
 	 */
 	public boolean doDraw() {
 		return a1.isPolarH() || a2.isPolarH();
+	}
+
+	public void addToAsMol(astex.Molecule asMol) {
+		astex.Atom temp1 = asMol.addAtom();
+		astex.Atom temp2 = asMol.addAtom();
+
+		temp1.setElement(a1.getType());
+		temp1.x = a1.x3d;
+		temp1.y = a1.y3d;
+		temp1.z = a1.z3d;
+
+		if (a1.getType() == 6) {
+			temp1.setColor(Color32.magenta);
+		}
+
+		temp2.setElement(a2.getType());
+		temp2.x = a2.x3d;
+		temp2.y = a2.y3d;
+		temp2.z = a2.z3d;
+
+		if (a2.getType() == 6) {
+			temp2.setColor(Color32.magenta);
+		}
+
+		asMol.addBond(temp1, temp2);
 	}
 }

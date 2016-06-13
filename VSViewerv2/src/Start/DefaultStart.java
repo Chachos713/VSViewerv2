@@ -10,7 +10,6 @@ import Views.AstexView;
 import Views.CommentView;
 import Views.MolGridView;
 import Views.ScatterPlotView;
-import Views.ThreeDimView;
 
 /**
  * Starts the program with an initial file
@@ -39,12 +38,11 @@ public class DefaultStart {
 		// Creates the database ad all the forms
 		d = Database.read(file);
 
-		ThreeDimView tdv = new ThreeDimView(d);
 		CommentView cv = new CommentView(d);
 		AstexView av = new AstexView(d);
-		MolGridView mgv = new MolGridView(d, tdv, av, cv);
+		MolGridView mgv = new MolGridView(d, av, cv);
 
-		ScatterPlotView spv = new ScatterPlotView(d, cv, mgv, tdv, av);
+		ScatterPlotView spv = new ScatterPlotView(d, cv, mgv, av);
 
 		// Starts the program with the scatter plot view.
 		spv.run();
