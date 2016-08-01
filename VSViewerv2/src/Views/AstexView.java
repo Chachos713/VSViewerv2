@@ -49,7 +49,18 @@ public class AstexView implements ActionListener {
 		file.add(open);
 		file.add(save);
 
+		JMenu tools = new JMenu("Tools");
+
+		JMenuItem advOptions = new JMenuItem("Advanced Options");
+		advOptions.setActionCommand("A");
+		advOptions.setMnemonic('a');
+		advOptions.addActionListener(this);
+
+		tools.add(advOptions);
+		tools.add(ap.getProteinOptions());
+
 		menu.add(file);
+		menu.add(tools);
 
 		return menu;
 	}
@@ -57,7 +68,7 @@ public class AstexView implements ActionListener {
 	public void show(boolean last) {
 		frame.setVisible(ap.display() && (!last || frame.isVisible()));
 	}
-	
+
 	public void addMol(int m) {
 		if (m < 0)
 			return;
@@ -67,7 +78,7 @@ public class AstexView implements ActionListener {
 		if (dim >= 3)
 			show(false);
 	}
-	
+
 	public void close() {
 		frame.dispose();
 	}
