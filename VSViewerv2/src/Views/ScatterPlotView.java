@@ -52,11 +52,11 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 		mgv = m;
 		av = a;
 
-		spp = new ScatterPlotPanel(d, this);
+		frame = new JFrame("Scatter Plot View");
+
+		spp = new ScatterPlotPanel(d, this, frame);
 
 		JMenuBar menu = createMenuBar();
-
-		frame = new JFrame("Scatter Plot View");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(this);
 		frame.add(spp);

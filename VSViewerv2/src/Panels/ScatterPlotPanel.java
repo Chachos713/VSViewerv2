@@ -2,9 +2,11 @@ package Panels;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -15,6 +17,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.Observable;
@@ -35,6 +39,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
+import Filter.FilterForm;
 import Start.DefaultStart;
 import Util.Calculator;
 import Util.DataLabel;
@@ -52,6 +57,8 @@ import Util.Point2d;
 @SuppressWarnings("serial")
 public class ScatterPlotPanel extends JPanel implements ActionListener,
 		Observer {
+	private static final int BORDER = 20;
+
 	private int xaxis, yaxis, saxis, caxis;
 	private ArrayList<DataLabel> labels;
 	private boolean invertSelection;
@@ -77,6 +84,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 
 	private JMenu xMenu, yMenu;
 
+	private Dialog dis;
+	private DisplayPanel disp;
+
+	private FilterForm ff;
+	private boolean hide;
+
 	/**
 	 * Creates the panel for the scatter plot to be drawn on.
 	 * 
@@ -85,8 +98,10 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 	 * @param owner
 	 *            the event listener and class that holds the reference to this
 	 *            object
+	 * @param frame
+	 *            the owner of the panel.
 	 */
-	public ScatterPlotPanel(Database d, EventListener owner) {
+	public ScatterPlotPanel(Database d, EventListener owner, Frame frame) {
 		data = d;
 		d.addObserver(this);
 		labels = d.getLabel();
@@ -149,6 +164,37 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		xMenu = new JMenu("X Axis");
 		yMenu = new JMenu("Y Axis");
 		createMenus((ActionListener) owner);
+
+		ff = new FilterForm(frame, labels);
+
+		disp = new DisplayPanel(labels, caxis, saxis, sMin, sMax, this);
+		dis = new Dialog(frame);
+		dis.add(disp);
+		dis.pack();
+
+		dis.addWindowListener(new WindowListener() {
+			public void windowActivated(WindowEvent arg0) {
+			}
+
+			public void windowClosed(WindowEvent arg0) {
+			}
+
+			public void windowClosing(WindowEvent arg0) {
+				dis.setVisible(false);
+			}
+
+			public void windowDeactivated(WindowEvent arg0) {
+			}
+
+			public void windowDeiconified(WindowEvent arg0) {
+			}
+
+			public void windowIconified(WindowEvent arg0) {
+			}
+
+			public void windowOpened(WindowEvent arg0) {
+			}
+		});
 	}
 
 	/**
@@ -235,21 +281,34 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		String s = saxis == -1 ? null : labels.get(saxis).getLabel();
 
 		// Draws the borders
-		drawVerticalCenteredString(y, 10, (int) (d.getHeight() / 2), g);
-		drawCenteredString(x, (int) (d.getWidth() / 2),
-				(int) (d.getHeight() - 10), g);
+		drawVerticalCenteredString(y, (int) (.75 * BORDER / 2),
+				(int) (d.getHeight() / 2) - BORDER / 2, g);
+		drawCenteredString(x, (int) (d.getWidth() / 2) - BORDER / 2,
+				(int) (d.getHeight() - .75 * BORDER / 2), g);
 
-		drawCenteredString("Scatter Plot Display", (int) d.getWidth() / 2, 10,
-				g);
-
-		g.drawLine(20, 20, 20, (int) d.getHeight() - 20);
-		g.drawLine(20, (int) d.getHeight() - 20, (int) d.getWidth() - 20,
-				(int) d.getHeight() - 20);
+		g.drawLine(BORDER, BORDER, BORDER, (int) d.getHeight() - BORDER);
+		g.drawLine(BORDER, (int) d.getHeight() - BORDER, (int) d.getWidth()
+				- BORDER, (int) d.getHeight() - BORDER);
 
 		double[] xNums = new double[data.getNumMols()];
 		double[] yNums = new double[data.getNumMols()];
 		double[] sNums = new double[data.getNumMols()];
 		double[] cNums = new double[data.getNumMols()];
+
+		int xScale = labels.get(xaxis).canLog() ? 1 : -1;
+		int yScale = labels.get(yaxis).canLog() ? 1 : -1;
+
+		int sScale = 1;
+		try {
+			sScale = labels.get(saxis).canLog() ? 1 : -1;
+		} catch (Exception e) {
+		}
+
+		int cScale = 1;
+		try {
+			cScale = labels.get(caxis).canLog() ? 1 : -1;
+		} catch (Exception e) {
+		}
 
 		// Collects all the values for each axis
 		for (int i = 0; i < data.getNumMols(); i++) {
@@ -258,26 +317,31 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 
 			if (labels.get(xaxis).doLog())
 				xNums[i] = (xNums[i] == Double.NEGATIVE_INFINITY) ? xNums[i]
-						: Math.log10(xNums[i]);
+						: Math.log10(xScale * xNums[i]);
 
 			if (labels.get(yaxis).doLog())
 				yNums[i] = (yNums[i] == Double.NEGATIVE_INFINITY) ? yNums[i]
-						: Math.log10(yNums[i]);
+						: Math.log10(yScale * yNums[i]);
 
 			if (saxis != -1) {
 				sNums[i] = data.getMolecule(i).getData(s);
 				if (labels.get(saxis).doLog())
 					sNums[i] = (sNums[i] == Double.NEGATIVE_INFINITY) ? sNums[i]
-							: Math.log10(sNums[i]);
+							: Math.log10(sScale * sNums[i]);
 			}
 
 			if (caxis != -1) {
 				cNums[i] = data.getMolecule(i).getData(c);
 				if (labels.get(caxis).doLog())
 					cNums[i] = (cNums[i] == Double.NEGATIVE_INFINITY) ? cNums[i]
-							: Math.log10(cNums[i]);
+							: Math.log10(cScale * cNums[i]);
 			}
 		}
+
+		checkMolecule(xNums, xaxis);
+		checkMolecule(yNums, yaxis);
+		checkMolecule(sNums, saxis);
+		checkMolecule(cNums, caxis);
 
 		double xlo, xhi, ylo, yhi, clo, chi, slo, shi;
 
@@ -345,6 +409,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		// Draws the points
 		for (int i = 0; i < data.getNumMols(); i++) {
 			molLoc[i] = null;
+
+			if (!ff.addMolecule(data.getMolecule(i)))
+				continue;
+			if (data.isSelected(i) && hide)
+				continue;
+
 			xV = xNums[i];
 			yV = yNums[i];
 
@@ -362,8 +432,9 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 				cValue = Color.red;
 			}
 
-			if (data.isSelected(i))
+			if (data.isSelected(i)) {
 				cValue = Color.green;
+			}
 
 			g.setColor(cValue);
 
@@ -387,11 +458,12 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 			xPer = (xV - xlo) / (xhi - xlo) * xZoom;
 			yPer = (yV - ylo) / (yhi - ylo) * yZoom;
 
-			xValue = (int) (xPer * (d.getWidth() - 40) + xLoc);
-			yValue = (int) (d.getHeight() - yPer * (d.getHeight() - 40) + yLoc);
+			xValue = (int) (xPer * (d.getWidth() - BORDER * 2) + xLoc);
+			yValue = (int) (d.getHeight() - yPer * (d.getHeight() - BORDER * 2) + yLoc);
 
-			if (Calculator.inRange(20, this.getWidth() - 20, xValue)
-					&& Calculator.inRange(20, this.getHeight() - 20, yValue)) {
+			if (Calculator.inRange(BORDER, this.getWidth() - BORDER, xValue)
+					&& Calculator.inRange(BORDER, this.getHeight() - BORDER,
+							yValue)) {
 
 				g.fillOval((int) (xValue - sValue), (int) (yValue - sValue),
 						(int) (2 * sValue), (int) (2 * sValue));
@@ -408,27 +480,28 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		}
 
 		// Draws the minimum and maximum values on the axes
-		xlo = Calculator.round(xlo + (xhi - xlo)
-				* (((-xLoc) / (this.getWidth() - 40)) * (1 / xZoom)), 3);
-		xhi = Calculator.round(xlo + (xhi - xlo)
-				* ((this.getWidth() - 40 - xLoc) / (this.getWidth() - 40))
-				* (1 / xZoom), 3);
-		ylo = Calculator.round(
-				ylo + (yhi - ylo)
-						* (((-yLoc) / (this.getHeight() - 40)) * (1 / yZoom)),
-				3);
-		yhi = Calculator.round(ylo + (yhi - ylo)
-				* ((this.getHeight() - 40 - yLoc) / (this.getHeight() / 40))
-				* (1 / yZoom), 3);
+		xlo = Calculator
+				.round(xlo
+						+ (xhi - xlo)
+						* (((-xLoc) / (this.getWidth() - BORDER * 2)) * (1 / xZoom)),
+						3);
+		xhi = Calculator.round(
+				xlo
+						+ (xhi - xlo)
+						* ((this.getWidth() - BORDER * 2 - xLoc) / (this
+								.getWidth() - BORDER * 2)) * (1 / xZoom), 3);
+		ylo = Calculator
+				.round(ylo
+						+ (yhi - ylo)
+						* (((-yLoc) / (this.getHeight() - BORDER * 2)) * (1 / yZoom)),
+						3);
+		yhi = Calculator.round(
+				ylo
+						+ (yhi - ylo)
+						* ((this.getHeight() - BORDER * 2 - yLoc) / (this
+								.getHeight() - BORDER * 2)) * (1 / yZoom), 3);
 
 		g.setColor(Color.black);
-
-		drawCenteredString("" + xlo, 45, (int) d.getHeight() - 10, g);
-		drawCenteredString("" + xhi, (int) d.getWidth() - 45,
-				(int) d.getHeight() - 10, g);
-
-		drawVerticalCenteredString("" + yhi, 10, 45, g);
-		drawVerticalCenteredString("" + ylo, 10, (int) d.getHeight() - 45, g);
 
 		// Draws the circle
 		if (circ != null) {
@@ -438,27 +511,44 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 			}
 		}
 
-		// Draws molecule name hovered over
 		if (name >= 0) {
-			g.drawString(data.getMolecule(name).getName(), hover.x, hover.y);
 			hoveredMol = name;
-			if (!molSide.isVisible())
-				molSide.setVisible(data.getMolecule(0).getDimension() >= 2
-						&& data.display(0));
 		}
 
 		// Draws LSRL if need be
 		double[] lsrl = Calculator.LSRL(molLoc);
 
-		double mYlo = lsrl[0] * 20 + lsrl[1];
-		double mYhi = lsrl[0] * (this.getWidth() - 20) + lsrl[1];
-		double mXlo = 20;
-		double mXhi = this.getWidth() - 20;
+		double mYlo = lsrl[0] * BORDER + lsrl[1];
+		double mYhi = lsrl[0] * (this.getWidth() - BORDER) + lsrl[1];
+		double mXlo = BORDER;
+		double mXhi = this.getWidth() - BORDER;
 
 		if (drawLSRL && Math.abs(lsrl[2]) >= rBound)
 			g.drawLine((int) mXlo, (int) mYlo, (int) mXhi, (int) mYhi);
 
 		pd.repaint();
+	}
+
+	/**
+	 * Check if the axis works off the percentile scale or not.
+	 * 
+	 * @param nums
+	 *            the numbers to work with.
+	 * @param axis
+	 *            the axis to use.
+	 */
+	private void checkMolecule(double[] nums, int axis) {
+		if (axis < 0)
+			return;
+		if (!labels.get(axis).doPer())
+			return;
+
+		double ind;
+
+		for (int i = 0; i < nums.length; i++) {
+			ind = labels.get(axis).find(nums[i]);
+			nums[i] = 100 * ind / nums.length;
+		}
 	}
 
 	/**
@@ -506,11 +596,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 	 * Shows the display options for the scatter plot
 	 */
 	public void displayOptions() {
-		DisplayPanel d = new DisplayPanel(labels, xaxis, yaxis, caxis, saxis,
-				sMin, sMax, this);
-
-		JOptionPane.showConfirmDialog(this, d, "Display Options",
-				JOptionPane.OK_CANCEL_OPTION);
+		dis.setVisible(true);
 	}
 
 	/**
@@ -544,9 +630,7 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		int y = arg0.getY();
 		int x = arg0.getX();
 
-		if (y < 20 && x > 20) {
-			displayOptions();
-		} else if (x < 20) {
+		if (x < 20) {
 			yaxis += delta;
 			yaxis = (yaxis + labels.size()) % labels.size();
 
@@ -656,11 +740,6 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 		case 's':
 			saxis = Integer.parseInt(command.substring(1));
 			break;
-		case 'l':
-			int label = Integer.parseInt(command.substring(1));
-			labels.get(label).setDoLog(
-					((JCheckBox) (arg0.getSource())).isSelected());
-			break;
 		}
 
 		this.repaint();
@@ -767,6 +846,20 @@ public class ScatterPlotPanel extends JPanel implements ActionListener,
 			data.flipScreen(s.charAt(1));
 			break;
 		}
+	}
+
+	/**
+	 * Change the marker size range.
+	 * 
+	 * @param min
+	 *            the new minimum for the marker sizes.
+	 * @param max
+	 *            the new maximum for the marker sizes.
+	 */
+	public void setMinMax(double min, double max) {
+		sMin = (int) min;
+		sMax = (int) max;
+		this.repaint();
 	}
 
 	/**

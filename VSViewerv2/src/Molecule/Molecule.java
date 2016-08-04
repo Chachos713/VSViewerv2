@@ -470,14 +470,13 @@ public class Molecule {
 			for (DataLabel l : labelList) {
 				if (l.getLabel().equals(d.getLabel())) {
 					found = true;
-					l.addData(Math.signum(d.getValue()) > 0);
+					l.addData(d.getValue());
 					break;
 				}
 			}
 
 			if (!found) {
-				labelList.add(new DataLabel(d.getLabel(), Math.signum(d
-						.getValue()) > 0));
+				labelList.add(new DataLabel(d.getLabel(), d.getValue()));
 			}
 		}
 	}

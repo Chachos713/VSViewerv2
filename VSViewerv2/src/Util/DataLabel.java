@@ -9,40 +9,65 @@ package Util;
  */
 public class DataLabel {
 	private String label;
-	private boolean log, doLog;
+	private boolean log;
+	private double min, max;
+	private int disType;
+	private Node<Double> values;
 
 	/**
-	 * Creates a data label with a given name and starting value for log.
+	 * Creates a data label with a name and an initial value.
 	 * 
 	 * @param l
-	 *            the name of the label
+	 *            the name of the label.
 	 * @param p
-	 *            the starting value for log
+	 *            the first value associated with that label.
 	 */
-	public DataLabel(String l, boolean p) {
-		log = p;
+	public DataLabel(String l, double p) {
+		log = p > 0;
 		label = l;
-		doLog = false;
+		disType = 0;
+		min = p;
+		max = p;
+		values = new Node<Double>(p, null);
+		values = new Node<Double>(0.0, values);
 	}
 
 	/**
-	 * Checks if the new point helps to give this label a log scale
+	 * Adds another value to the label.
 	 * 
-	 * @param pos
-	 *            whether the value is positive or not
+	 * @param value
+	 *            another value associated with the label.
 	 */
-	public void addData(boolean pos) {
-		log |= pos;
+	public void addData(double value) {
+		log |= (value > 0);
+		max = Math.max(max, value);
+
+		if (value != Double.NEGATIVE_INFINITY)
+			min = Math.min(min, value);
+
+		Node<Double> temp = new Node<Double>(value);
+		Node<Double> next = values;
+
+		while (next.hasNext() && next.getNext().getData() < temp.getData()) {
+			next = next.getNext();
+		}
+
+		temp.setNext(next.getNext());
+		next.setNext(temp);
 	}
 
 	/**
-	 * Tells the label whether to use a log scale on this data
-	 * 
-	 * @param p
-	 *            whether to use a log scale or not
+	 * @return the minimum value associated with the label.
 	 */
-	public void setDoLog(boolean p) {
-		doLog = p;
+	public double getMin() {
+		return min;
+	}
+
+	/**
+	 * @return the maximum value associated with the label.
+	 */
+	public double getMax() {
+		return max;
 	}
 
 	/**
@@ -61,9 +86,60 @@ public class DataLabel {
 	}
 
 	/**
-	 * @return whether to use a log scale or not
+	 * @return whether to use a log scale or not.
 	 */
 	public boolean doLog() {
-		return doLog;
+		return disType == 1;
+	}
+
+	/**
+	 * @return whether to use the percentile or not.
+	 */
+	public boolean doPer() {
+		return disType == 2;
+	}
+
+	/**
+	 * Change how to display the data label.
+	 * 
+	 * @param i
+	 *            the new way to display the data label.
+	 */
+	public void setDisType(int i) {
+		disType = i % 3;
+	}
+
+	public String toString() {
+		return "[ " + label + " <> " + min + " <> " + max + " ]";
+	}
+
+	/**
+	 * @return the display type of the label.
+	 */
+	public int getDisType() {
+		return disType;
+	}
+
+	/**
+	 * Searches for a value in the list.
+	 * 
+	 * @param d
+	 *            the value to search for.
+	 * @return the index of the value.
+	 */
+	public int find(double d) {
+		int i = 0;
+		Node<Double> next = values;
+
+		while (next.hasNext()) {
+			next = next.getNext();
+
+			if (d == next.getData())
+				return i;
+
+			i++;
+		}
+
+		return -1;
 	}
 }

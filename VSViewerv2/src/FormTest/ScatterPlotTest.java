@@ -59,7 +59,7 @@ public class ScatterPlotTest implements MouseMotionListener, MouseListener,
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addWindowListener(this);
 
-		sp = new ScatterPlotPanel(d, this);
+		sp = new ScatterPlotPanel(d, this, frame);
 
 		frame.add(sp);
 		frame.setJMenuBar(createMenu());

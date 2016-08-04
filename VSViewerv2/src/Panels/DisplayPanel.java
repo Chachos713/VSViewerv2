@@ -7,13 +7,18 @@ import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+import Filter.KNumberModel;
 import Util.DataLabel;
 
 /**
@@ -25,16 +30,18 @@ import Util.DataLabel;
  *
  */
 @SuppressWarnings("serial")
-public class DisplayPanel extends JPanel {
+public class DisplayPanel extends JPanel implements ChangeListener {
+	private Box cPanel, sPanel, lPanel;
+	private ActionListener action;
+	private ButtonGroup cButts, sButts;
+	private ArrayList<String> added;
+	private JSpinner max, min;
+
 	/**
 	 * Creates the display panel to allow the user to interact with.
 	 * 
 	 * @param labels
 	 *            the list of data labels
-	 * @param xaxis
-	 *            the current value for the x axis
-	 * @param yaxis
-	 *            the current value for the y axis
 	 * @param caxis
 	 *            the current value for the color by
 	 * @param saxis
@@ -46,55 +53,18 @@ public class DisplayPanel extends JPanel {
 	 * @param event
 	 *            the action listener for whenever a new value is changed
 	 */
-	public DisplayPanel(ArrayList<DataLabel> labels, int xaxis, int yaxis,
-			int caxis, int saxis, int sMin, int sMax, ActionListener event) {
+	public DisplayPanel(ArrayList<DataLabel> labels, int caxis, int saxis,
+			int sMin, int sMax, ActionListener event) {
 
-		this.setLayout(new GridLayout(1, 4));
-
-		Box xPanel = Box.createVerticalBox();
-		xPanel.add(new JLabel("X-Axis Options"));
+		added = new ArrayList<String>();
+		action = event;
+		this.setLayout(new GridLayout(2, 2));
 		JRadioButton temp;
-		ButtonGroup xButts = new ButtonGroup();
+		JScrollPane buttons;
 
-		for (int i = 0; i < labels.size(); i++) {
-			temp = new JRadioButton(labels.get(i).getLabel());
-			temp.setSelected(i == xaxis);
-			temp.addActionListener(event);
-			temp.setActionCommand("x" + i);
-			xPanel.add(temp);
-			xButts.add(temp);
-		}
-
-		JScrollPane buttons = new JScrollPane(xPanel);
-		buttons.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		buttons.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		buttons.setPreferredSize(new Dimension(100, 300));
-
-		this.add(buttons);
-
-		Box yPanel = Box.createVerticalBox();
-		yPanel.add(new JLabel("Y-Axis Options"));
-		ButtonGroup yButts = new ButtonGroup();
-
-		for (int i = 0; i < labels.size(); i++) {
-			temp = new JRadioButton(labels.get(i).getLabel());
-			temp.setSelected(i == yaxis);
-			temp.addActionListener(event);
-			temp.setActionCommand("y" + i);
-			yPanel.add(temp);
-			yButts.add(temp);
-		}
-
-		buttons = new JScrollPane(yPanel);
-		buttons.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		buttons.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		buttons.setPreferredSize(new Dimension(150, 300));
-
-		this.add(buttons);
-
-		Box cPanel = Box.createVerticalBox();
+		cPanel = Box.createVerticalBox();
 		cPanel.add(new JLabel("Coloring Options"));
-		ButtonGroup cButts = new ButtonGroup();
+		cButts = new ButtonGroup();
 
 		temp = new JRadioButton("None");
 		temp.setSelected(-1 == caxis);
@@ -103,6 +73,7 @@ public class DisplayPanel extends JPanel {
 		cButts.add(temp);
 		temp.setActionCommand("c-1");
 
+		// Creates the color by
 		for (int i = 0; i < labels.size(); i++) {
 			temp = new JRadioButton(labels.get(i).getLabel());
 			temp.setSelected(i == caxis);
@@ -110,18 +81,19 @@ public class DisplayPanel extends JPanel {
 			temp.setActionCommand("c" + i);
 			cPanel.add(temp);
 			cButts.add(temp);
+			added.add(labels.get(i).getLabel());
 		}
 
 		buttons = new JScrollPane(cPanel);
-		buttons.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		buttons.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		buttons.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		buttons.setPreferredSize(new Dimension(100, 300));
+		buttons.setPreferredSize(new Dimension(100, 200));
 
 		this.add(buttons);
 
-		Box sPanel = Box.createVerticalBox();
+		sPanel = Box.createVerticalBox();
 		sPanel.add(new JLabel("Size Options"));
-		ButtonGroup sButts = new ButtonGroup();
+		sButts = new ButtonGroup();
 
 		temp = new JRadioButton("None");
 		temp.setSelected(-1 == saxis);
@@ -130,6 +102,7 @@ public class DisplayPanel extends JPanel {
 		sPanel.add(temp);
 		sButts.add(temp);
 
+		// Creates the size by
 		for (int i = 0; i < labels.size(); i++) {
 			temp = new JRadioButton(labels.get(i).getLabel());
 			temp.setSelected(i == saxis);
@@ -140,32 +113,131 @@ public class DisplayPanel extends JPanel {
 		}
 
 		buttons = new JScrollPane(sPanel);
-		buttons.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		buttons.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		buttons.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		buttons.setPreferredSize(new Dimension(100, 300));
+		buttons.setPreferredSize(new Dimension(100, 200));
 
 		this.add(buttons);
 
-		Box lPanel = Box.createVerticalBox();
-		lPanel.add(new JLabel("Log Options"));
+		Box set = Box.createVerticalBox();
 
-		JCheckBox ltemp;
+		JPanel te = new JPanel(new GridLayout(1, 2));
+		te.add(new JLabel("Marker Min:"));
+		min = new JSpinner(new KNumberModel(sMin, 1, 1000, 1));
+		te.add(min);
+
+		JPanel t = new JPanel();
+		t.add(te);
+
+		set.add(t);
+
+		te = new JPanel(new GridLayout(1, 2));
+		te.add(new JLabel("CMD", SwingConstants.CENTER));
+		te.add(new JLabel("Bioscience"));
+		set.add(te);
+
+		te = new JPanel(new GridLayout(1, 2));
+		te.add(new JLabel("Marker Max:"));
+		max = new JSpinner(new KNumberModel(sMax, 1, 1000, 1));
+		te.add(max);
+		t = new JPanel();
+		t.add(te);
+		set.add(t);
+
+		min.addChangeListener(this);
+		max.addChangeListener(this);
+
+		this.add(set);
+
+		lPanel = Box.createVerticalBox();
+		lPanel.add(new JLabel("Display Types"));
+
+		JComboBox<String> ltemp;
+		JPanel pTemp;
 
 		for (int i = 0; i < labels.size(); i++) {
-			ltemp = new JCheckBox(labels.get(i).getLabel());
-			ltemp.setSelected(labels.get(i).doLog());
-			ltemp.setEnabled(labels.get(i).canLog());
+			ltemp = new JComboBox<String>();
+			ltemp.addItem("None");
+			ltemp.addItem("Log");
+			ltemp.addItem("Percentile");
 			ltemp.addActionListener(event);
 			ltemp.setActionCommand("l" + i);
-			lPanel.add(ltemp);
+			ltemp.setSelectedIndex(labels.get(i).getDisType());
+
+			pTemp = new JPanel(new GridLayout(1, 2));
+			pTemp.add(new JLabel(labels.get(i).getLabel()));
+			pTemp.add(ltemp);
+			lPanel.add(pTemp);
 		}
 
 		buttons = new JScrollPane(lPanel);
-		buttons.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		buttons.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		buttons.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		buttons.setPreferredSize(new Dimension(100, 300));
+		buttons.setPreferredSize(new Dimension((int) lPanel.getPreferredSize()
+				.getWidth() + 20, 200));
 
 		this.add(buttons);
+
+		this.setPreferredSize(new Dimension(
+				buttons.getPreferredSize().width * 2 + 5, 405));
 	}
 
+	/**
+	 * Add new data labels.
+	 * 
+	 * @param labels
+	 *            the list of data labels.
+	 */
+	public void update(ArrayList<DataLabel> labels) {
+		JRadioButton temp;
+		JComboBox<String> ltemp;
+		JPanel pTemp;
+
+		for (int i = 0; i < labels.size(); i++) {
+			if (added.contains(labels.get(i).getLabel()))
+				continue;
+
+			temp = new JRadioButton(labels.get(i).getLabel());
+			temp.setSelected(false);
+			temp.addActionListener(action);
+			temp.setActionCommand("c" + i);
+			cPanel.add(temp);
+			cButts.add(temp);
+			added.add(labels.get(i).getLabel());
+
+			temp = new JRadioButton(labels.get(i).getLabel());
+			temp.setSelected(false);
+			temp.addActionListener(action);
+			temp.setActionCommand("s" + i);
+			sPanel.add(temp);
+			sButts.add(temp);
+
+			ltemp = new JComboBox<String>();
+			ltemp.addItem("None");
+			ltemp.addItem("Log");
+			ltemp.addItem("Percentile");
+			ltemp.addActionListener(action);
+			ltemp.setActionCommand("l" + i);
+			ltemp.setSelectedIndex(labels.get(i).getDisType());
+
+			pTemp = new JPanel(new GridLayout(1, 2));
+			pTemp.add(new JLabel(labels.get(i).getLabel()));
+			pTemp.add(ltemp);
+			lPanel.add(pTemp);
+		}
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent arg0) {
+		double v1 = (double) min.getValue();
+		double v2 = (double) max.getValue();
+
+		double min = Math.min(v1, v2);
+		double max = Math.max(v1, v2);
+
+		this.min.setValue(min);
+		this.max.setValue(max);
+
+		((ScatterPlotPanel) action).setMinMax(min, max);
+	}
 }

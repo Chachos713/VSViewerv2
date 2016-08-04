@@ -104,6 +104,7 @@ public class Database extends Observable {
 				tempNode = new Node<Molecule>(temp);
 				last.setNext(tempNode);
 				last = tempNode;
+				System.out.println(count);
 			}
 
 			Molecule[] mols = new Molecule[count];
