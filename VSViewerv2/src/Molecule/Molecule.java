@@ -154,7 +154,8 @@ public class Molecule {
 					y2 = 0;
 				}
 
-				a[i] = new Atom(type, i, x2, y2, x3, y3, z3);
+				a[i] = new Atom((byte) type, (byte) i, (float) x2, (float) y2,
+						(float) x3, (float) y3, (float) z3);
 			}
 		} catch (Exception e) {
 			throw new MissingPartException(
@@ -170,16 +171,16 @@ public class Molecule {
 			a2 = Integer.parseInt(bond[1]) - 1;
 			t = Integer.parseInt(bond[2]);
 
-			b[i] = new Bond(a[a1], a[a2], t, true, null, false);
+			b[i] = new Bond(a[a1], a[a2], (byte) t);
 		}
 
 		// Creates the fingerprints
-		ArrayList<Integer> fp3 = FingerprintMaker.make3d(a, xlo, ylo, zlo,
+		ArrayList<Short> fp3 = FingerprintMaker.make3d(a, xlo, ylo, zlo,
 				(int) ((xhi - xlo) / FingerprintMaker.DX),
 				(int) ((yhi - ylo) / FingerprintMaker.DX),
 				(int) ((zhi - zlo) / FingerprintMaker.DX));
 
-		ArrayList<Integer> fp2 = FingerprintMaker.make2d(a);
+		ArrayList<Short> fp2 = FingerprintMaker.make2d(a);
 
 		return new Molecule(name, a, b, c, d, two, three, fp3, fp2);
 	}
@@ -262,7 +263,8 @@ public class Molecule {
 			sc.nextLine();
 
 			t = PeriodicTable.getAtomicNumber(type);
-			atms[i] = new Atom(t, i, x, y, x, y, z);
+			atms[i] = new Atom((byte) t, (byte) i, (float) x, (float) y,
+					(float) x, (float) y, (float) z);
 		}
 
 		int a1, a2;
@@ -273,7 +275,7 @@ public class Molecule {
 			a2 = sc.nextInt();
 			t = sc.nextInt();
 			sc.nextLine();
-			bnds[i] = new Bond(atms[a1 - 1], atms[a2 - 1], t, true, null, false);
+			bnds[i] = new Bond(atms[a1 - 1], atms[a2 - 1], (byte) t);
 		}
 
 		sc.nextLine();
@@ -284,7 +286,7 @@ public class Molecule {
 		// There are no fingerprints created for this
 		return new Molecule(name, atms, bnds, new ArrayList<Comment>(),
 				new ArrayList<DataPt>(), "Zwei", "Drei",
-				new ArrayList<Integer>(), new ArrayList<Integer>());
+				new ArrayList<Short>(), new ArrayList<Short>());
 	}
 
 	private String name;
@@ -294,7 +296,7 @@ public class Molecule {
 	private ArrayList<DataPt> dataPts;
 	private astex.Molecule asMol;
 
-	private ArrayList<Integer> fp3d, fp2d;
+	private ArrayList<Short> fp3d, fp2d;
 
 	private String d3, d2;
 
@@ -324,7 +326,7 @@ public class Molecule {
 	 */
 	private Molecule(String n, Atom[] a, Bond[] b, ArrayList<Comment> c,
 			ArrayList<DataPt> d, String two, String three,
-			ArrayList<Integer> fp3, ArrayList<Integer> fp2) {
+			ArrayList<Short> fp3, ArrayList<Short> fp2) {
 
 		name = new String(n);
 		d2 = new String(two);
@@ -343,7 +345,7 @@ public class Molecule {
 		}
 
 		for (int i = 0; i < bnds.length; i++) {
-			bnds[i] = new Bond(b[i], !d3.isEmpty());
+			bnds[i] = new Bond(b[i]);
 			bnds[i].addToAsMol(asMol);
 		}
 
@@ -355,14 +357,14 @@ public class Molecule {
 			dataPts.add(new DataPt(d.get(i)));
 		}
 
-		fp3d = new ArrayList<Integer>(fp3.size());
-		fp2d = new ArrayList<Integer>(fp2.size());
+		fp3d = new ArrayList<Short>(fp3.size());
+		fp2d = new ArrayList<Short>(fp2.size());
 
-		for (int i : fp3) {
+		for (short i : fp3) {
 			fp3d.add(i);
 		}
 
-		for (int i : fp2) {
+		for (short i : fp2) {
 			fp2d.add(i);
 		}
 	}
@@ -464,20 +466,15 @@ public class Molecule {
 				commentList.add(c.getComment());
 		}
 
-		boolean found;
-		for (DataPt d : dataPts) {
-			found = false;
+		main:for (DataPt d : dataPts) {
 			for (DataLabel l : labelList) {
 				if (l.getLabel().equals(d.getLabel())) {
-					found = true;
 					l.addData(d.getValue());
-					break;
+					continue main;
 				}
 			}
 
-			if (!found) {
-				labelList.add(new DataLabel(d.getLabel(), d.getValue()));
-			}
+			labelList.add(new DataLabel(d.getLabel(), d.getValue()));
 		}
 	}
 
@@ -895,8 +892,8 @@ public class Molecule {
 		int numEqu = 0;
 		int i1 = 0, i2 = 0;
 		int k1, k2;
-		ArrayList<Integer> mol1 = this.fp2d;
-		ArrayList<Integer> mol2 = query.fp2d;
+		ArrayList<Short> mol1 = this.fp2d;
+		ArrayList<Short> mol2 = query.fp2d;
 
 		if (d3) {
 			mol1 = this.fp3d;

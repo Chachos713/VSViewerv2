@@ -12,9 +12,9 @@ import Util.PeriodicTable;
  *
  */
 public class Atom {
-	public final double x2d, y2d;
-	public final double x3d, y3d, z3d;
-	protected int type, id;
+	public final float x2d, y2d;
+	public final float x3d, y3d, z3d;
+	protected byte type, id;
 	protected ArrayList<Atom> partners;
 
 	/**
@@ -29,7 +29,7 @@ public class Atom {
 	 * @param y2
 	 *            the y coordinate in 2D
 	 */
-	public Atom(int t, int i, double x2, double y2) {
+	public Atom(byte t, byte i, float x2, float y2) {
 		this(t, i, x2, y2, 0, 0, 0);
 	}
 
@@ -62,8 +62,8 @@ public class Atom {
 	 * @param z3
 	 *            the 3D z coordinate
 	 */
-	public Atom(int t, int i, double x2, double y2, double x3, double y3,
-			double z3) {
+	public Atom(byte t, byte i, float x2, float y2, float x3, float y3,
+			float z3) {
 		type = t;
 		id = i;
 		x2d = x2;
@@ -72,7 +72,7 @@ public class Atom {
 		y3d = y3;
 		z3d = z3;
 
-		partners = new ArrayList<Atom>();
+		partners = new ArrayList<Atom>(4);
 	}
 
 	/**

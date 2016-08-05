@@ -12,7 +12,7 @@ import astex.Color32;
 public class Bond {
 
 	private Atom a1, a2;
-	private int type; // Needs to be stored but might not be used
+	private byte type; // Needs to be stored but might not be used
 
 	/**
 	 * Creates a bond
@@ -25,12 +25,8 @@ public class Bond {
 	 *            the bond type
 	 * @param is3D
 	 *            determine to draw the cylinder
-	 * @param color
-	 *            the color of the bond if it is part of a protein
-	 * @param pro
-	 *            is parte of a protein
 	 */
-	public Bond(Atom a, Atom b, int t, boolean is3D, float[] color, boolean pro) {
+	public Bond(Atom a, Atom b, byte t) {
 		a1 = a;
 		a2 = b;
 		type = t;
@@ -47,8 +43,8 @@ public class Bond {
 	 * @param is3D
 	 *            drar the 3D structure or not
 	 */
-	public Bond(Bond other, boolean is3D) {
-		this(other.a1, other.a2, other.type, is3D, null, false);
+	public Bond(Bond other) {
+		this(other.a1, other.a2, other.type);
 	}
 
 	/**

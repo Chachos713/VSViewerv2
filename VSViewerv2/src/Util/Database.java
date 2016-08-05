@@ -68,10 +68,10 @@ public class Database extends Observable {
 		try {
 			Scanner sc = new Scanner(new File(file));
 
-			double[] limits;
+			float[] limits;
 
 			String[] lines = sc.nextLine().split(" ");
-			limits = new double[8];
+			limits = new float[8];
 
 			if (lines.length != 8) {
 				throw new LimitsNotDefinedException(
@@ -80,7 +80,7 @@ public class Database extends Observable {
 
 			for (int i = 0; i < 8; i++) {
 				try {
-					limits[i] = Double.parseDouble(lines[i]);
+					limits[i] = Float.parseFloat(lines[i]);
 				} catch (Exception e) {
 					throw new NumberFormatException("Limit " + i
 							+ " can't be read: " + lines[i]);
@@ -104,10 +104,11 @@ public class Database extends Observable {
 				tempNode = new Node<Molecule>(temp);
 				last.setNext(tempNode);
 				last = tempNode;
-				System.out.println(count);
 			}
 
 			Molecule[] mols = new Molecule[count];
+			
+			System.out.println("Done with reading");
 
 			int i = 0;
 			tempNode = header;
@@ -119,6 +120,8 @@ public class Database extends Observable {
 			}
 
 			sc.close();
+			
+			System.out.println("Creating Database");
 
 			Database d = new Database(limits, mols, file);
 
@@ -183,7 +186,7 @@ public class Database extends Observable {
 				i++;
 			}
 
-			double[] lim = { 0, 0, 0, 0, 0, 0, 0, 0 };
+			float[] lim = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 			Database d = new Database(lim, mol, file);
 			return d;
@@ -192,7 +195,7 @@ public class Database extends Observable {
 		}
 	}
 
-	private double[] limits;
+	private float[] limits;
 	private Molecule[] mols;
 	private boolean changed;
 	private String file;
@@ -214,7 +217,7 @@ public class Database extends Observable {
 	 * @param f
 	 *            the file that was read
 	 */
-	private Database(double[] l, Molecule[] m, String f) {
+	private Database(float[] l, Molecule[] m, String f) {
 		limits = l;
 		mols = m;
 		file = f;
@@ -222,6 +225,8 @@ public class Database extends Observable {
 		selected = new boolean[mols.length];
 		lastClicked = -1;
 
+		System.out.println("Creating Lists");
+		
 		createMasterLists();
 
 		displays = new boolean[4];
@@ -238,8 +243,8 @@ public class Database extends Observable {
 		commentList = new ArrayList<String>();
 		labelList = new ArrayList<DataLabel>();
 
-		for (Molecule m : mols) {
-			m.addToList(labelList, commentList);
+		for (int i = 0; i < mols.length; i++) {
+			mols[i].addToList(labelList, commentList);
 		}
 	}
 

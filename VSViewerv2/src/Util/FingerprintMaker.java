@@ -52,16 +52,16 @@ public class FingerprintMaker {
 	 *            number of boxes to divide the depth by
 	 * @return a list of values for the 3D fingerprint for a molecule
 	 */
-	public static ArrayList<Integer> make3d(Atom[] m, double xlo, double ylo,
+	public static ArrayList<Short> make3d(Atom[] m, double xlo, double ylo,
 			double zlo, int nx, int ny, int nz) {
 		if (fpLoc == null)
 			makeLocs();
 
 		double x, y, z;
 		double i, j, k;
-		int n;
+		short n;
 
-		ArrayList<Integer> fp3d = new ArrayList<Integer>();
+		ArrayList<Short> fp3d = new ArrayList<Short>();
 
 		for (int a = 0; a < m.length; a++) {
 			if (m[a].getType() == 1)
@@ -74,7 +74,7 @@ public class FingerprintMaker {
 				z = k + v.z;
 				y = j + v.y;
 				x = i + v.x;
-				n = (int) (z + y * nz + x * ny * nz);
+				n = (short) (z + y * nz + x * ny * nz);
 
 				x = xlo + x * DX + DX / 2.0;
 				y = ylo + y * DX + DX / 2.0;
@@ -87,7 +87,7 @@ public class FingerprintMaker {
 		}
 
 		Collections.sort(fp3d);
-		removeDoubles(fp3d);
+		fp3d = removeDoubles(fp3d);
 
 		return fp3d;
 	}
@@ -97,11 +97,12 @@ public class FingerprintMaker {
 	 * 
 	 * @param fp3d
 	 *            the finger print
+	 * @return
 	 */
-	private static void removeDoubles(ArrayList<Integer> fp3d) {
-		ArrayList<Integer> temp = new ArrayList<Integer>();
+	private static ArrayList<Short> removeDoubles(ArrayList<Short> fp3d) {
+		ArrayList<Short> temp = new ArrayList<Short>();
 		int last = -1;
-		int now;
+		short now;
 
 		for (int i = 0; i < fp3d.size(); i++) {
 			now = fp3d.get(i);
@@ -110,7 +111,8 @@ public class FingerprintMaker {
 			}
 			last = now;
 		}
-		fp3d = temp;
+
+		return temp;
 	}
 
 	/**
@@ -120,14 +122,14 @@ public class FingerprintMaker {
 	 *            the molecule. Note this is an Array of Atoms.
 	 * @return the structural fingerprint for the molecule
 	 */
-	public static ArrayList<Integer> make2d(Atom[] m) {
+	public static ArrayList<Short> make2d(Atom[] m) {
 		final int maxType = 6;
 		ArrayList<Path> paths = getPath(4, m);
 
-		ArrayList<Integer> fp2d = new ArrayList<Integer>();
+		ArrayList<Short> fp2d = new ArrayList<Short>();
 
 		for (Path p : paths) {
-			int tot = 0;
+			short tot = 0;
 			int fac = 1;
 			for (int i = 0; i < p.length(); i++) {
 				int val = m[p.get(i)].getFPType();

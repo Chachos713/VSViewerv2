@@ -1,5 +1,8 @@
 package Util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Helps to maintain which data label can use a log scale, and maintain which
  * data labels to use a log scale for
@@ -13,6 +16,7 @@ public class DataLabel {
 	private double min, max;
 	private int disType;
 	private Node<Double> values;
+	private ArrayList<Double> vals;
 
 	/**
 	 * Creates a data label with a name and an initial value.
@@ -30,6 +34,8 @@ public class DataLabel {
 		max = p;
 		values = new Node<Double>(p, null);
 		values = new Node<Double>(0.0, values);
+		vals = new ArrayList<Double>();
+		vals.add(p);
 	}
 
 	/**
@@ -45,15 +51,18 @@ public class DataLabel {
 		if (value != Double.NEGATIVE_INFINITY)
 			min = Math.min(min, value);
 
-		Node<Double> temp = new Node<Double>(value);
-		Node<Double> next = values;
-
-		while (next.hasNext() && next.getNext().getData() < temp.getData()) {
-			next = next.getNext();
-		}
-
-		temp.setNext(next.getNext());
-		next.setNext(temp);
+//		Node<Double> temp = new Node<Double>(value);
+//		Node<Double> next = values;
+//
+//		while (next.hasNext() && next.getNext().getData() < temp.getData()) {
+//			next = next.getNext();
+//		}
+//
+//		temp.setNext(next.getNext());
+//		next.setNext(temp);
+		
+		vals.add(value);
+		Collections.sort(vals);
 	}
 
 	/**
@@ -140,6 +149,6 @@ public class DataLabel {
 			i++;
 		}
 
-		return -1;
+		return vals.indexOf(d);
 	}
 }
