@@ -3,6 +3,7 @@ package Molecule;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import astex.Color32;
 import Util.PeriodicTable;
 
 /**
@@ -16,6 +17,7 @@ public class Atom {
 	public final float x3d, y3d, z3d;
 	protected byte type, id;
 	protected ArrayList<Atom> partners;
+	private astex.Atom asAtom;
 
 	/**
 	 * Creates a 2D atom.
@@ -249,5 +251,21 @@ public class Atom {
 
 		line += " 0  0  0  0  0  0  0  0  0  0  0  0";
 		return line;
+	}
+
+	public astex.Atom getAsMol(astex.Molecule mol) {
+		if(asAtom == null){
+			asAtom = mol.addAtom();
+			asAtom.x = x3d;
+			asAtom.y = y3d;
+			asAtom.z = z3d;
+			asAtom.setElement(type);
+			
+			if(type == 6){
+				asAtom.setColor(Color32.magenta);
+			}
+		}
+		
+		return asAtom;
 	}
 }

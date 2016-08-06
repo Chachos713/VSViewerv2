@@ -22,9 +22,9 @@ public class AstexView implements ActionListener {
 		if (dim < 3)
 			return;
 
-		ap = new AstexPanel(d, this, false, true);
-
 		frame = new JFrame("3D View (Astex)");
+
+		ap = new AstexPanel(d, this, false, true, frame);
 		frame.setJMenuBar(createMenu());
 		frame.add(ap);
 		frame.pack();
@@ -49,14 +49,20 @@ public class AstexView implements ActionListener {
 		file.add(open);
 		file.add(save);
 
-		JMenu tools = new JMenu("Tools");
+		JMenu tools = new JMenu("Display");
 
 		JMenuItem advOptions = new JMenuItem("Advanced Options");
 		advOptions.setActionCommand("A");
 		advOptions.setMnemonic('a');
 		advOptions.addActionListener(this);
 
+		JMenuItem lights = new JMenuItem("Lighting");
+		lights.setActionCommand("L");
+		lights.setMnemonic('l');
+		lights.addActionListener(this);
+
 		tools.add(advOptions);
+		tools.add(lights);
 		tools.add(ap.getProteinOptions());
 
 		menu.add(file);

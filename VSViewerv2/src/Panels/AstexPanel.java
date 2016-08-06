@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -25,6 +26,7 @@ import Util.Database;
 import Util.Filter;
 import Util.KFileChooser;
 import Util.KUserInterface;
+import Util.Lighting;
 import Util.MolPanel;
 import Util.MolViewer;
 import Views.AstexView;
@@ -46,8 +48,10 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 	private KUserInterface ui;
 	private JCheckBoxMenuItem[] proteinOpts;
 
+	private Lighting lights;
+
 	public AstexPanel(Database d, ActionListener a, boolean readAll,
-			boolean delete) {
+			boolean delete, JFrame owner) {
 		MolPanel.deletable = delete;
 		this.setLayout(new BorderLayout());
 		this.setPreferredSize(new Dimension(900, 700));
@@ -77,6 +81,7 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 		dataPane.setPreferredSize(new Dimension(200, 700));
 
 		this.add(BorderLayout.EAST, dataPane);
+		lights = new Lighting(mv, owner);
 	}
 
 	public JMenuItem getProteinOptions() {
@@ -141,13 +146,28 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 		mols[i].setSelected(false);
 	}
 
-	private void addMolecule(Molecule mol) {
-		mv.addMolecule(mol.getAstex());
+	private void addMolecule(Molecule m) {
+		astex.Molecule mol = m.getAstex();
+
+		mv.addMolecule(mol);
 
 		mr.execute("select molexact '" + mol.getName() + "';");
 		mr.execute("display cylinders on current;");
 		mr.execute("display lines off current;");
 		mr.execute("ball_radius 0 current;");
+		mr.execute("exclude molexact '" + mol.getName() + "';");
+
+		mr.execute("select molexact '" + mol.getName() + "';");
+		mr.execute("exclude not (element 1);");
+
+		for (int j = 0; j < mol.getAtomCount(); j++) {
+			if (mol.getAtom(j).getElement() == 1
+					&& mol.getAtom(j).getBondedAtom(0).getElement() != 6)
+				mr.execute("exclude id " + mol.getAtom(j).getId() + ";");
+		}
+
+		mr.execute("display cylinders off current;");
+		mr.execute("display lines off current;");
 		mr.execute("exclude molexact '" + mol.getName() + "';");
 	}
 
@@ -167,10 +187,36 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 		if (i == mols.length)
 			return;
 
-		if (mols[i].isSelected()) {
-			addMolecule(data.getMolecule(i));
+		if (mols[i].isSurface(source)) {
+			if (mols[i].doSurface()) {
+				int col = Color32.magenta;
+				String color = hex.format(col & 0xFFFFFF);
+
+				mr.execute("select molexact '" + mols[i].getName() + "';");
+				mr.execute("surface surf_mesh_"
+						+ mols[i].getName().replace("-", "_") + " " + color + " current;");
+				mr.execute("exclude molexact '" + mols[i].getName() + "';");
+			} else {
+				mr.execute("object remove surf_mesh_" + mols[i].getName().replace("-", "_") + ";");
+			}
 		} else {
-			removeMolecule(data.getMolecule(i));
+			if (mols[i].isSelected()) {
+				addMolecule(data.getMolecule(i));
+				
+				if(mols[i].doSurface()){
+					int col = Color32.magenta;
+					String color = hex.format(col & 0xFFFFFF);
+
+					mr.execute("select molexact '" + mols[i].getName() + "';");
+					mr.execute("surface -probe 1 -solid false surf_mesh_"
+							+ mols[i].getName().replace("-", "_") + " " + color + " current;");
+					mr.execute("exclude molexact '" + mols[i].getName() + "';");
+				}
+			} else {
+				removeMolecule(data.getMolecule(i));
+				if(mols[i].doSurface())
+					mr.execute("object remove surf_mesh_" + mols[i].getName().replace("-", "_") + ";");
+			}
 		}
 	}
 
@@ -230,6 +276,9 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 					ui = new KUserInterface(mv);
 				else
 					ui.userInterfaceFrame.setVisible(true);
+				break;
+			case 'L':
+				lights.show();
 			}
 
 		this.repaint();

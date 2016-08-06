@@ -2,6 +2,7 @@ package Util;
 
 import java.awt.Component;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -38,7 +39,11 @@ public class KFileChooser {
 	 * the singleton design pattern.
 	 */
 	private KFileChooser() {
-		jfc = new JFileChooser();
+		try {
+			jfc = new JFileChooser(new File(".").getCanonicalFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		jfc.setAcceptAllFileFilterUsed(false);
 	}
 

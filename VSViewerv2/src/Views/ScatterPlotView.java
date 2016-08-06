@@ -52,7 +52,7 @@ public class ScatterPlotView implements MouseListener, MouseMotionListener,
 		mgv = m;
 		av = a;
 
-		frame = new JFrame("Scatter Plot View");
+		frame = new JFrame("VSViewer");
 
 		spp = new ScatterPlotPanel(d, this, frame);
 

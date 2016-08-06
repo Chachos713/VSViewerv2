@@ -49,7 +49,7 @@ public class ThreeDimTest implements ActionListener {
 		frame = new JFrame("3D Test");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		tdp = new AstexPanel(data, this, true, false);
+		tdp = new AstexPanel(data, this, true, false, frame);
 
 		frame.add(tdp);
 		frame.setJMenuBar(createMenu());

@@ -1,7 +1,5 @@
 package Molecule;
 
-import astex.Color32;
-
 /**
  * Stores the atoms that are involved in the bond. Extends TransformGroup so
  * that it deals with the two end points of the atoms.
@@ -88,28 +86,7 @@ public class Bond {
 	 * @param asMol
 	 *            the astex molecule to add this bond to.
 	 */
-	public void addToAsMol(astex.Molecule asMol) {
-		astex.Atom temp1 = asMol.addAtom();
-		astex.Atom temp2 = asMol.addAtom();
-
-		temp1.setElement(a1.getType());
-		temp1.x = a1.x3d;
-		temp1.y = a1.y3d;
-		temp1.z = a1.z3d;
-
-		if (a1.getType() == 6) {
-			temp1.setColor(Color32.magenta);
-		}
-
-		temp2.setElement(a2.getType());
-		temp2.x = a2.x3d;
-		temp2.y = a2.y3d;
-		temp2.z = a2.z3d;
-
-		if (a2.getType() == 6) {
-			temp2.setColor(Color32.magenta);
-		}
-
-		asMol.addBond(temp1, temp2);
+	public void addToAsMol(astex.Molecule mol) {
+		mol.addBond(a1.getAsMol(mol), a2.getAsMol(mol));
 	}
 }

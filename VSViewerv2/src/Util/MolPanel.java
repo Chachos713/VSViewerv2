@@ -10,12 +10,15 @@ import javax.swing.JPanel;
 public class MolPanel extends JPanel {
 	public static boolean deletable;
 
-	private JCheckBox display;
+	private JCheckBox display, surface;
 	private JButton remove;
 
 	public MolPanel(String name, ActionListener a) {
 		display = new JCheckBox(name);
 		display.addActionListener(a);
+		
+		surface = new JCheckBox("Surface");
+		surface.addActionListener(a);
 
 		remove = new JButton("X");
 		remove.addActionListener(a);
@@ -23,6 +26,10 @@ public class MolPanel extends JPanel {
 
 		this.add(display);
 		this.add(remove);
+		this.add(surface);
+		
+		//name = name.replace('-', '_');
+		this.setName(name);
 	}
 
 	public boolean isRemove(Object source) {
@@ -30,11 +37,15 @@ public class MolPanel extends JPanel {
 	}
 
 	public boolean isCheck(Object source) {
-		return display == source;
+		return display == source || surface == source;
 	}
 
 	public boolean isSelected() {
 		return display.isSelected();
+	}
+	
+	public boolean doSurface(){
+		return surface.isSelected();
 	}
 
 	public void setSelected(boolean b) {
@@ -43,5 +54,9 @@ public class MolPanel extends JPanel {
 
 	public JButton getButton() {
 		return remove;
+	}
+
+	public boolean isSurface(Object source) {
+		return surface == source;
 	}
 }

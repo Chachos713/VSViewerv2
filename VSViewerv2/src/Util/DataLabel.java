@@ -15,7 +15,6 @@ public class DataLabel {
 	private boolean log;
 	private double min, max;
 	private int disType;
-	private Node<Double> values;
 	private ArrayList<Double> vals;
 
 	/**
@@ -32,8 +31,6 @@ public class DataLabel {
 		disType = 0;
 		min = p;
 		max = p;
-		values = new Node<Double>(p, null);
-		values = new Node<Double>(0.0, values);
 		vals = new ArrayList<Double>();
 		vals.add(p);
 	}
@@ -50,19 +47,8 @@ public class DataLabel {
 
 		if (value != Double.NEGATIVE_INFINITY)
 			min = Math.min(min, value);
-
-//		Node<Double> temp = new Node<Double>(value);
-//		Node<Double> next = values;
-//
-//		while (next.hasNext() && next.getNext().getData() < temp.getData()) {
-//			next = next.getNext();
-//		}
-//
-//		temp.setNext(next.getNext());
-//		next.setNext(temp);
 		
 		vals.add(value);
-		Collections.sort(vals);
 	}
 
 	/**
@@ -137,17 +123,7 @@ public class DataLabel {
 	 * @return the index of the value.
 	 */
 	public int find(double d) {
-		int i = 0;
-		Node<Double> next = values;
-
-		while (next.hasNext()) {
-			next = next.getNext();
-
-			if (d == next.getData())
-				return i;
-
-			i++;
-		}
+		Collections.sort(vals);
 
 		return vals.indexOf(d);
 	}
