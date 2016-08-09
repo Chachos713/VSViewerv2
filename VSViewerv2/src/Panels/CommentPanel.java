@@ -10,13 +10,16 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
 import Molecule.Molecule;
@@ -39,7 +42,7 @@ public class CommentPanel extends JPanel implements Observer {
 	private JTextArea dataDisplay;
 	private JList<String> superComments, molComments;
 	private DefaultListModel<String> superList, molList;
-	private JButton addSuper, addNew, delete;
+	private JButton add, delete;
 
 	private ArrayList<DataLabel> label;
 
@@ -78,14 +81,7 @@ public class CommentPanel extends JPanel implements Observer {
 		molComments = new JList<String>(molList);
 
 		JPanel comm = new JPanel();
-		comm.setLayout(new GridLayout(1, 3));
-
-		JScrollPane superPane = new JScrollPane(superComments);
-		superPane
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		superPane
-				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		superPane.setPreferredSize(new Dimension(200, 100));
+		comm.setLayout(new GridLayout(1, 2));
 
 		JScrollPane molPane = new JScrollPane(molComments);
 		molPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -94,13 +90,9 @@ public class CommentPanel extends JPanel implements Observer {
 
 		Box buttons = Box.createVerticalBox();
 
-		addSuper = new JButton("Add From Master");
-		addSuper.addActionListener(c);
-		buttons.add(addSuper);
-
-		addNew = new JButton("Add New");
-		addNew.addActionListener(c);
-		buttons.add(addNew);
+		add = new JButton("Add Comment");
+		add.addActionListener(c);
+		buttons.add(add);
 
 		delete = new JButton("Delete Comment");
 		delete.addActionListener(c);
@@ -108,7 +100,6 @@ public class CommentPanel extends JPanel implements Observer {
 
 		comm.add(molPane);
 		comm.add(buttons);
-		comm.add(superPane);
 
 		this.setLayout(new GridLayout(2, 1));
 		this.add(comm);
@@ -184,7 +175,7 @@ public class CommentPanel extends JPanel implements Observer {
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		String comment = null;
-		boolean add = true;
+		boolean addNew = true;
 
 		if (mol < 0) {
 			JOptionPane.showMessageDialog(this, "No Molecule Selected",
@@ -194,7 +185,7 @@ public class CommentPanel extends JPanel implements Observer {
 		}
 
 		if (source == delete) {
-			add = false;
+			addNew = false;
 
 			if (molComments.getSelectedIndex() < 0) {
 				JOptionPane.showMessageDialog(this, "No Comment Selected",
@@ -204,27 +195,13 @@ public class CommentPanel extends JPanel implements Observer {
 			}
 
 			comment = molComments.getSelectedValue();
-		} else if (source == addSuper) {
-			if (superComments.getSelectedIndex() < 0) {
-				JOptionPane.showMessageDialog(this, "No Comment Selected",
-						"ERROR", JOptionPane.ERROR_MESSAGE);
-
+		} else if (source == add) {
+			comment = addNewComment();
+			if (comment.isEmpty())
 				return;
-			}
-
-			comment = superComments.getSelectedValue();
-		} else if (source == addNew) {
-			comment = JOptionPane.showInputDialog(this, "Comment:",
-					"Add a Comment", JOptionPane.QUESTION_MESSAGE);
-
-			if (comment.isEmpty()) {
-				JOptionPane.showMessageDialog(this, "No Comment Entered",
-						"ERROR", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
 		}
 
-		data.modifyComment(mol, comment, add);
+		data.modifyComment(mol, comment, addNew);
 		updateSelected();
 
 		superList.clear();
@@ -235,6 +212,51 @@ public class CommentPanel extends JPanel implements Observer {
 		}
 
 		this.repaint();
+	}
+
+	private String addNewComment() {
+		Box box = Box.createVerticalBox();
+		final JTextField text = new JTextField(20);
+		text.setEnabled(false);
+
+		ButtonGroup bg = new ButtonGroup();
+
+		JRadioButton ax = new JRadioButton("Master List");
+		ax.setSelected(true);
+		ax.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				text.setEnabled(false);
+				superComments.setEnabled(true);
+			}
+		});
+		bg.add(ax);
+
+		JRadioButton an = new JRadioButton("Add New");
+		an.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				superComments.setEnabled(false);
+				text.setEnabled(true);
+			}
+		});
+		bg.add(an);
+
+		box.add(ax);
+		box.add(new JScrollPane(superComments));
+		box.add(an);
+		box.add(text);
+
+		int choice = JOptionPane.showConfirmDialog(this, box,
+				"Add New Comment", JOptionPane.OK_CANCEL_OPTION);
+
+		if (choice != JOptionPane.OK_OPTION)
+			return "";
+
+		if (ax.isSelected() && superComments.getSelectedIndex() >= 0)
+			return superComments.getSelectedValue();
+		else if (an.isSelected())
+			return text.getText().trim();
+
+		return "";
 	}
 
 	/**
@@ -279,6 +301,6 @@ public class CommentPanel extends JPanel implements Observer {
 		}
 
 		this.repaint();
-		((CommentView) addSuper.getActionListeners()[0]).setMolecule(mol, true);
+		((CommentView) add.getActionListeners()[0]).setMolecule(mol, true);
 	}
 }

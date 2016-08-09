@@ -37,6 +37,11 @@ import astex.MoleculeRenderer;
 
 @SuppressWarnings("serial")
 public class AstexPanel extends JPanel implements Observer, ActionListener {
+	private static final Object[][] surf = {
+			{ "C", "O", "N", "S", "H" },
+			{ Color32.green, Color32.red, Color32.blue, Color32.yellow,
+					Color32.white }, { 6, 8, 7, 10, 1 } };
+
 	private MolViewer mv;
 	private MoleculeRenderer mr;
 	private Database data;
@@ -174,6 +179,8 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 	private void removeMolecule(Molecule mol) {
 		DynamicArray da = mv.moleculeRenderer.getMolecules();
 		da.remove(mol.getAstex());
+		mr.execute("object remove surf_mesh_" + mol.getName().replace("-", "_")
+				+ ";");
 	}
 
 	private void findChangedBox(Object source) {
@@ -193,29 +200,40 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 				String color = hex.format(col & 0xFFFFFF);
 
 				mr.execute("select molexact '" + mols[i].getName() + "';");
+
+				if (mr.getSelectedAtomCount() < 1)
+					return;
+
 				mr.execute("surface surf_mesh_"
-						+ mols[i].getName().replace("-", "_") + " " + color + " current;");
+						+ mols[i].getName().replace("-", "_") + " " + color
+						+ " current;");
 				mr.execute("exclude molexact '" + mols[i].getName() + "';");
 			} else {
-				mr.execute("object remove surf_mesh_" + mols[i].getName().replace("-", "_") + ";");
+				mr.execute("object remove surf_mesh_"
+						+ mols[i].getName().replace("-", "_") + ";");
 			}
 		} else {
 			if (mols[i].isSelected()) {
 				addMolecule(data.getMolecule(i));
-				
-				if(mols[i].doSurface()){
+
+				if (mols[i].doSurface()) {
 					int col = Color32.magenta;
 					String color = hex.format(col & 0xFFFFFF);
 
 					mr.execute("select molexact '" + mols[i].getName() + "';");
+
+					if (mr.getSelectedAtomCount() < 1)
+						return;
+
 					mr.execute("surface -probe 1 -solid false surf_mesh_"
-							+ mols[i].getName().replace("-", "_") + " " + color + " current;");
+							+ mols[i].getName().replace("-", "_") + " " + color
+							+ " current;");
 					mr.execute("exclude molexact '" + mols[i].getName() + "';");
 				}
 			} else {
 				removeMolecule(data.getMolecule(i));
-				if(mols[i].doSurface())
-					mr.execute("object remove surf_mesh_" + mols[i].getName().replace("-", "_") + ";");
+				mr.execute("object remove surf_mesh_"
+						+ mols[i].getName().replace("-", "_") + ";");
 			}
 		}
 	}
@@ -279,6 +297,8 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 				break;
 			case 'L':
 				lights.show();
+				break;
+			case 'H':
 			}
 
 		this.repaint();
@@ -295,11 +315,10 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 
 		mv.loadMolecule(f.toString());
 
-		for (int i = 0; i < da.size(); i++) {
-			if (((astex.Molecule) da.get(i)).getName().equals(f.toString())) {
-				protein = (astex.Molecule) da.get(i);
-			}
-		}
+		protein = (astex.Molecule) da.get(da.size() - 1);
+
+		if (protein == null)
+			return;
 
 		mr.execute("select molexact '" + protein.getName() + "';");
 		mr.execute("display cylinders on current;");
@@ -344,7 +363,10 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 					runCommand(j, proteinOpts[j]);
 				}
 			} else {
-				mr.execute("object remove surf_" + type + ";");
+				for (int j = 0; j < surf[0].length; j++) {
+					mr.execute("object remove surf_" + type + "_" + surf[0][j]
+							+ ";");
+				}
 				mr.execute("object remove surf_mesh_" + type + ";");
 				mr.execute("object remove ribb_" + type + ";");
 				mr.execute("select molexact '" + mol.getName() + "';");
@@ -395,15 +417,25 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 			break;
 		case 4: // Hide/Show the solid surface
 			if (((JCheckBoxMenuItem) source).isSelected()) {
-				int col = (type == 0) ? Color32.green : Color32.magenta;
-				String color = hex.format(col & 0xFFFFFF);
+				String color;
+				for (int j = 0; j < surf[0].length; j++) {
+					color = hex.format(0xFFFFFF & (int) surf[1][j]);
 
-				mr.execute("select molexact '" + mol.getName() + "';");
-				mr.execute("surface -probe 1 -solid true surf_" + type + " "
-						+ color + " current;");
-				mr.execute("exclude molexact '" + mol.getName() + "';");
+					mr.execute("select element " + surf[2][j] + ";");
+
+					if (mr.getSelectedAtomCount() < 1)
+						continue;
+
+					mr.execute("surface -probe 1 -solid true surf_" + type
+							+ "_" + surf[0][j] + " " + color + " current;");
+				}
+
+				mr.execute("select none;");
 			} else {
-				mr.execute("object remove surf_" + type + ";");
+				for (int j = 0; j < surf[0].length; j++) {
+					mr.execute("object remove surf_" + type + "_" + surf[0][j]
+							+ ";");
+				}
 			}
 			break;
 		case 5: // Show/Hide the ribbon

@@ -64,9 +64,16 @@ public class AstexView implements ActionListener {
 		tools.add(advOptions);
 		tools.add(lights);
 		tools.add(ap.getProteinOptions());
+		
+		JMenu t = new JMenu("Tools");
+		JMenuItem hbond = new JMenuItem("Find H Bonds");
+		hbond.addActionListener(this);
+		hbond.setActionCommand("H");
+		t.add(hbond);
 
 		menu.add(file);
 		menu.add(tools);
+		//menu.add(t);
 
 		return menu;
 	}
