@@ -421,7 +421,7 @@ public class AstexPanel extends JPanel implements Observer, ActionListener {
 				for (int j = 0; j < surf[0].length; j++) {
 					color = hex.format(0xFFFFFF & (int) surf[1][j]);
 
-					mr.execute("select element " + surf[2][j] + ";");
+					mr.execute("select element " + surf[2][j] + " and molexact '" + mol.getName() + "';");
 
 					if (mr.getSelectedAtomCount() < 1)
 						continue;
