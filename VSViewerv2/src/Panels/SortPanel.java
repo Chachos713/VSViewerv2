@@ -41,6 +41,8 @@ public class SortPanel extends Box {
 		for (DataLabel l : label) {
 			header.addElement(l.getLabel());
 		}
+		
+		header.addElement("Name");
 
 		labels.setSelectedIndex(0);
 

@@ -644,7 +644,8 @@ public class Database extends Observable {
 			labelName = mols[molQuery].getName() + " - Sim3D";
 		}
 
-		ArrayList<Double> values = new ArrayList<Double>();
+		@SuppressWarnings("rawtypes")
+        ArrayList<Comparable> values = new ArrayList<Comparable>();
 		ArrayList<Integer> index = new ArrayList<Integer>();
 		double value;
 

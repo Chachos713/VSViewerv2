@@ -18,7 +18,8 @@ public class MolSorter {
 	 */
 	private class MolTemp implements Comparable<MolTemp> {
 		public int loc;
-		public double val;
+		@SuppressWarnings("rawtypes")
+        public Comparable val;
 		public boolean desc;
 
 		/**
@@ -32,18 +33,20 @@ public class MolSorter {
 		 * @param d
 		 *            descending or ascending
 		 */
-		public MolTemp(int l, double v, boolean d) {
+		@SuppressWarnings("rawtypes")
+        public MolTemp(int l, Comparable v, boolean d) {
 			loc = l;
 			val = v;
 			desc = d;
 		}
 
-		@Override
+		@SuppressWarnings("unchecked")
+        @Override
 		public int compareTo(MolTemp arg0) {
 			if (desc) {
-				return Double.compare(arg0.val, val);
+				return arg0.val.compareTo(val);
 			} else {
-				return Double.compare(val, arg0.val);
+				return val.compareTo(arg0.val);
 			}
 		}
 	}
@@ -65,8 +68,9 @@ public class MolSorter {
 	 *            descending or ascending
 	 * @return the sorted list of molecule indicies
 	 */
-	public static ArrayList<Integer> sort(ArrayList<Integer> ind,
-			ArrayList<Double> val, boolean desc) {
+	@SuppressWarnings("rawtypes")
+    public static ArrayList<Integer> sort(ArrayList<Integer> ind,
+			ArrayList<Comparable> val, boolean desc) {
 
 		// Creates the list of classes to sort the indicies by
 		ArrayList<MolTemp> mt = new ArrayList<MolTemp>();
