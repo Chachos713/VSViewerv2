@@ -86,7 +86,7 @@ public class CommentPanel extends JPanel implements Observer {
 		JScrollPane molPane = new JScrollPane(molComments);
 		molPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		molPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		molPane.setPreferredSize(new Dimension(200, 100));
+		molPane.setPreferredSize(new Dimension(300, 200));
 
 		Box buttons = Box.createVerticalBox();
 
